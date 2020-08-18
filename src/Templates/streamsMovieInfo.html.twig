@@ -1,0 +1,149 @@
+{% extends "base.html.twig" %}
+
+{% block body %}
+    <style>
+        .container {
+            background: rgba(0,0,0,0.8);
+        }
+
+        p {
+            margin: 5px 0em !important;
+        }
+
+        /* STARS */
+        .star.star-1:after {
+            width: 3px;
+        }
+        .star.star-2:after {
+            width: 4px;
+        }
+        .star.star-3:after {
+            width: 5px;
+        }
+        .star.star-4:after {
+            width: 6px;
+        }
+        .star.star-5:after {
+            width: 7px;
+        }
+        .star.star-6:after {
+            width: 8px;
+        }
+        .star.star-7:after {
+            width: 9px;
+        }
+        .star.star-8:after {
+            width: 10px;
+        }
+        .star.star-9:after {
+            width: 11px;
+        }
+        .stars {
+            text-align: center;
+        }
+
+        td:nth-child(odd) {
+            width: 30%;
+            height: 3em;
+        }
+
+        .btn {
+            margin-bottom: 5px;
+            width: 100%;
+        }
+    </style>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12 col-sm-12 col-xs-12">
+                <h1 style="text-align: center;">{{ movie.name }}</h1>
+            </div>
+            <div>
+                <div class="col-lg-2 col-md-2 col-sm-3 col-xs-3">
+                    <img src="{{ baseUrlAbsolute ~ movie.image }}" width="100" height="160" class="col-md-12 col-sm-12 col-xs-12">
+                    <div class="col-md-12 col-sm-12 col-xs-12">
+                        {% if streamView[movie.streamId] is defined %}
+                            <div style="height: 2px;background: #d43f3a;"></div>
+                        {% endif %}
+
+                        {% set rating5 = (movie.rating/2)|round(1)  %}
+                        {% include 'Module/stars.html.twig' with {'rating': rating5} %}
+
+                        {% if isAndroid or isIos %}
+                        <a href="{{ baseUrlAbsolute }}/streams/flagAsView/movie/{{ movie.streamId }}/{{ (vlcDeeplink ~ movie.streamLink)|base64Encode }}" tabindex="1" class="btn btn-success">
+                            Play
+                        </a>
+                        {% endif %}
+                        {% if not isIos and not isAndroid and isChrome  %}
+                        <a href="{{ baseUrlAbsolute }}/streams/flagAsView/movie/{{ movie.streamId }}/{{ (baseUrlAbsolute ~ "/streams/play/movie/" ~ movie.streamId)|base64Encode }}" tabindex="1" class="btn btn-success">
+                            Webplayer
+                        </a>
+                        {% endif %}
+                        {% if movie.youtubeTrailer is not empty  %}
+                            {% if isAndroid or isIos %}
+                            <a href="{{ youtubeDeeplink }}{{ movie.youtubeTrailer }}" tabindex="1" class="btn btn-danger">
+                                Trailer
+                            </a>
+                            {% else %}
+                            <a href="https://www.youtube.com/watch?v={{ movie.youtubeTrailer }}" tabindex="1" class="btn btn-danger" style="width: 100%;" target="_blank">
+                                Trailer
+                            </a>
+                            {% endif %}
+                        {% endif %}
+                        {% if not isTv %}
+                        <a href="{{ movie.streamLink }}" class="btn btn-primary">
+                            Download
+                        </a>
+                        {% endif %}
+                        {% if isFavorite %}
+                        <a href="{{ baseUrlAbsolute }}/account/removefavorite/movie/{{ movie.streamId }}" class="btn btn-warning">
+                            <i class=" fa fa-minus"></i> Favorite
+                        </a>
+                        {% else %}
+                        <a href="{{ baseUrlAbsolute }}/account/addfavorite/movie/{{ movie.streamId }}" class="btn btn-warning">
+                            <i class="fa fa-plus"></i> Favorite
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-lg-10 col-md-10 col-sm-9 col-xs-9">
+                    <table>
+                        <tr>
+                            <td><b>Director:</b></td>
+                            <td>{{ movie.director }}</td>
+                        </tr>
+                        <tr>
+                            <td><b>Casting:</b></td>
+                            <td>{{ movie.cast }}</td>
+                        </tr>
+                        <tr>
+                            <td><b>Genre:</b></td>
+                            <td>{{ movie.genre }}</td>
+                        </tr>
+                        <tr>
+                            <td><b>Release date:</b></td>
+                            <td>{{ movie.releaseDate|date('d/m/Y') }}</td>
+                        </tr>
+                        <tr>
+                            <td><b>Duration:</b></td>
+                            <td>{{ movie.dureationFormatted }}</td>
+                        </tr>
+                        <tr>
+                            <td><b>Format:</b></td>
+                            <td>{{ movie.video.width }}x{{ movie.video.height }}</td>
+                        </tr>
+                        <tr>
+                            <td><b>Resume:</b></td>
+                            <td>{{ movie.plot }}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block bg %}
+    {% if movie.backdropPath[0] is not empty %}
+    <img class="body-bg" src="{{ baseUrlAbsolute ~ movie.backdropPath[0] }}">
+    {% endif %}
+{% endblock %}

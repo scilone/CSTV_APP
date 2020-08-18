@@ -1,0 +1,233 @@
+{% extends "base.html.twig" %}
+
+{% block body %}
+    <style>
+        .container {
+            background: rgba(0,0,0,0.8);
+        }
+
+        p {
+            margin: 5px 0em !important;
+        }
+
+        /* STARS */
+        .star.star-1:after {
+            width: 3px;
+        }
+        .star.star-2:after {
+            width: 4px;
+        }
+        .star.star-3:after {
+            width: 5px;
+        }
+        .star.star-4:after {
+            width: 6px;
+        }
+        .star.star-5:after {
+            width: 7px;
+        }
+        .star.star-6:after {
+            width: 8px;
+        }
+        .star.star-7:after {
+            width: 9px;
+        }
+        .star.star-8:after {
+            width: 10px;
+        }
+        .star.star-9:after {
+            width: 11px;
+        }
+        .stars {
+            text-align: center;
+        }
+
+        td:nth-child(odd) {
+            width: 30%;
+            height: 3em;
+        }
+
+        p {
+            font-family: roboto;
+            line-height: 17px;
+        }
+
+        .btn {
+            margin-bottom: 5px;
+            width: 100%;
+        }
+    </style>
+    <div class="container" style="margin: 3em; width: auto">
+        <div class="row">
+            <div class="col-md-12 col-sm-12 col-xs-12">
+                <h1 style="text-align: center;">{{ serie.name }}</h1>
+            </div>
+            <div>
+                <div class="sidenav col-md-3 col-sm-3 col-xs-3">
+                    <img src="{{ baseUrlAbsolute ~ serie.cover }}" class="col-md-12 col-sm-12 col-xs-12">
+                    <div class="col-md-12 col-sm-12 col-xs-12">
+                        {% include 'Module/stars.html.twig' with {'rating': serie.rating5based} %}
+                    </div>
+                    {% if serie.youtubeTrailer is not empty  %}
+                        {% if isAndroid or isIos %}
+                            <a href="{{ youtubeDeeplink }}{{ serie.youtubeTrailer }}" tabindex="1" class="btn btn-danger">
+                                Trailer
+                            </a>
+                        {% else %}
+                            <a href="https://www.youtube.com/watch?v={{ serie.youtubeTrailer }}" tabindex="1" target="_blank" class="btn btn-danger">
+                                Trailer
+                            </a>
+                        {% endif %}
+                    {% endif %}
+                    {% if isFavorite %}
+                        <a href="{{ baseUrlAbsolute }}/account/removefavorite/serie/{{ serie.id }}"class="btn btn-warning">
+                            <i class=" fa fa-minus"></i> Favorite
+                        </a>
+                    {% else %}
+                        <a href="{{ baseUrlAbsolute }}/account/addfavorite/serie/{{ serie.id }}" class="btn btn-warning">
+                            <i class="fa fa-plus"></i> Favorite
+                        </a>
+                    {% endif %}
+                    <div class="col-md-12 col-sm-12 col-xs-12">
+                        <b>Date :</b>
+                        {{ serie.releaseDate|date('d/m/Y') }}
+                    </div>
+                    <div class="col-md-12 col-sm-12 col-xs-12">
+                        <b>Genre :</b>
+                        {{ serie.genre }}
+                    </div>
+                </div>
+                <div class="col-md-9 col-sm-9 col-xs-9">
+                    <div class="col-md-2 col-sm-2 col-xs-2">
+                        <b>Director:</b>
+                    </div>
+                    <div class="col-md-10 col-sm-10 col-xs-10">
+                        {{ serie.director }}
+                    </div>
+                    <div class="col-md-2 col-sm-2 col-xs-2">
+                        <b>Casting:</b>
+                    </div>
+                    <div class="col-md-10 col-sm-10 col-xs-10">
+                        {{ serie.cast }}
+                    </div>
+                    <div class="col-md-2 col-sm-2 col-xs-2">
+                        <b>Resume:</b>
+                    </div>
+                    <div class="col-md-10 col-sm-10 col-xs-10">
+                        <p>{{ serie.plot }}</p>
+                    </div>
+                    <div class="col-md-7 col-sm-7 col-xs-7">
+                        <select class="form-control" id="seasonChoice" style="margin-top: 2em;">
+                            {% for season, episodes in serie.episodes %}
+                                <option value="{{ season }}">{{ serie.seasons[season].name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    {% set currentSeason = 0 %}
+                    {% set lastEpisode = 0 %}
+                    {% for season, episodes in serie.episodes %}
+                        <div class="seasons season{{ season }} col-md-12 col-sm-12 col-xs-12 {% if loop.index0 != 0 %}hide{% endif %}" style="padding: 1em 0;">
+                            <div class="col-md-10 col-sm-10">
+                                Episodes: {{ serie.seasons[season].episodeCount }}
+                            </div>
+                            <div class="col-md-2 col-sm-2 col-xs-2">
+                                {{ serie.seasons[season].airDate|date('d/m/Y') }}
+                            </div>
+                            <!--div class="col-md-12 col-sm-12 col-xs-12">
+                                <p>
+                                    {{ serie.seasons[season].overview }}
+                                </p>
+                            </div-->
+                            <div class="col-md-12 col-sm-12 col-xs-12" style="margin-top: 15px; background: rgb(0,0,0,0.5); padding-top: 1em;">
+                            {% for episode in episodes %}
+                                <div class="col-md-12 col-sm-12 col-xs-12 episode" style="padding-top: 1em;" id="episode-{{ episode.id }}" tabindex="-1">
+                                    <div class="col-md-4 col-sm-4 col-xs-4">
+                                        <img src="{% if episode.movieImage == '/asset/img/' %}{{ baseUrlAbsolute }}/img/blank.gif{% else %}{{ baseUrlAbsolute ~ episode.movieImage }}{% endif %}" width="100%" style="max-height: 7em">
+                                        {% if streamView[episode.id] is defined %}
+                                            {% set currentSeason = season %}
+                                            {% set lastEpisode = episode.id %}
+                                            <div style="height: 3px;background: #d43f3a;"></div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="col-md-5 col-sm-5 col-xs-5">
+                                        <p>{{ episode.episodeNum }}. {{ episode.name }}</p>
+                                        <p>{{ episode.dureationFormatted }}</p>
+                                        <p>{{ episode.video.width }}x{{ episode .video.height }}</p>
+                                        {% set rating5 = (episode.rating/2)|round(1)  %}
+                                        {% include 'Module/stars.html.twig' with {'rating': rating5} %}
+                                    </div>
+                                    <div class="col-md-3 col-sm-3 col-xs-3">
+                                        {% if isAndroid or isIos %}
+                                        <a href="{{ baseUrlAbsolute }}/streams/flagAsView/serie/{{ episode.id }}/{{ (vlcDeeplink ~ episode.streamLink)|base64Encode }}" tabindex="1" class="btn btn-primary pull-right" style="width: 80%; font-size: 10px">
+                                            Play
+                                        </a>
+                                        {% endif %}
+                                        {% if not isIos and not isAndroid and isChrome  %}
+                                        <a href="{{ baseUrlAbsolute }}/streams/flagAsView/serie/{{ episode.id }}/{{ (baseUrlAbsolute ~ "/streams/play/serie/" ~ serie.id ~ "/" ~ season ~ "/" ~ episode.episodeNum)|base64Encode }}" tabindex="1" class="btn btn-success pull-right" style="width: 80%; font-size: 10px">
+                                            Webplayer
+                                        </a>
+                                        {% endif %}
+                                        {% if not isTv %}
+                                        <a href="{{ episode.streamLink }}" tabindex="1" class="btn btn-default pull-right" style="width: 80%; font-size: 10px">
+                                            Download
+                                        </a>
+                                        {% endif %}
+                                    </div>
+                                    <!--div class="col-md-12 col-sm-12 col-xs-12">
+                                        <p>
+                                            {{ episode.plot }}
+                                        </p>
+                                    </div-->
+                                </div>
+                            {% endfor %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <input type="hidden" id="currentSeason" value="{{ currentSeason }}">
+    <input type="hidden" id="lastEpisode" value="{{ lastEpisode }}">
+{% endblock %}
+
+{% block js %}
+    <script type="text/javascript">
+        $('#seasonChoice').change(function () {
+            $('.seasons').addClass('hide');
+            $('.season' + $(this).val()).removeClass('hide');
+        });
+
+        //if we have already see an episode
+        if ($('#lastEpisode').val() > 0) {
+            //if we have a next episode this season
+            if ($('#episode-' + $('#lastEpisode').val()).next().length > 0) {
+                var nextEpisode = $('#episode-' + $('#lastEpisode').val()).next();
+
+                $('#seasonChoice').val($('#currentSeason').val());
+            } else {
+                //if we have a season next the current seen
+                if ($('#seasonChoice option[value='+$('#currentSeason').val()+']').next().length > 0) {
+                    const nextSeason = $('#seasonChoice option[value='+$('#currentSeason').val()+']').next().val();
+                    $('#seasonChoice').val(nextSeason);
+                    var nextEpisode = $('.season' + nextSeason + ' .episode:eq(0)');
+                } else {
+                    var nextEpisode = $('#episode-' + $('#lastEpisode').val());
+
+                    $('#seasonChoice').val($('#currentSeason').val());
+                }
+            }
+
+            $('#seasonChoice').change();
+            //nextEpisode.attr('tabindex', 1);
+            nextEpisode.find('.btn:eq(0)').focus()
+            window.location.href = '#' + nextEpisode.attr('id');
+        }
+    </script>
+{% endblock %}
+
+{% block bg %}
+    {% if movie.backdropPath[0] is not empty %}
+        <img class="body-bg" src="{{ baseUrlAbsolute ~ serie.backdropPath[0] }}">
+    {% endif %}
+{% endblock %}

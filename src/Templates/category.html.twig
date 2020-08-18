@@ -1,0 +1,57 @@
+{% extends "base.html.twig" %}
+
+{% block body %}
+    <ul>
+        {% set catLength = 2 %}
+        <a href="{{ baseUrlAbsolute }}/streams/{{ type }}/all"><li>ALL</li></a>
+        <a href="{{ baseUrlAbsolute }}/streams/{{ type }}/favorites"><li>FAVORITES</li></a>
+
+    {% for category in categories %}
+        <a href="{{ baseUrlAbsolute }}/streams/{{ type }}/{{ category.id }}"><li>{{ category.name }}</li></a>
+        {% set catLength = catLength + 1 %}
+    {% endfor %}
+        <a id="hiddenCats"><li style="opacity: 0.4;">HIDDEN</li></a>
+    {% for category in hiddenCategories %}
+        <a style="display: none;"
+           class="hidden-cat"
+           href="{{ baseUrlAbsolute }}/streams/{{ type }}/{{ category.id }}">
+            <li style="opacity: 0.4;">{{ category.name }}</li>
+        </a>
+        {% set catLength = catLength + 1 %}
+    {% endfor %}
+    </ul>
+
+    <style>
+        ul {
+            list-style-type:none;
+            padding: 3em;
+            -webkit-columns: 2;
+            -moz-columns: 2;
+            columns: 2;
+        }
+
+        li {
+            background: white;
+            margin-bottom: 2px;
+            padding: 5px;
+            opacity: 0.6;
+        }
+
+        a:focus > li{
+            font-weight: bold;
+            border: medium solid #e8b12c;
+        }
+
+        /*a:nth-child({{ (catLength/2)|round(0, 'ceil') }}) li {
+            margin-bottom: 5em;
+        }*/
+    </style>
+{% endblock %}
+
+{% block js %}
+    <script>
+        $('#hiddenCats').click(function () {
+            $('.hidden-cat').toggle();
+        });
+    </script>
+{% endblock %}

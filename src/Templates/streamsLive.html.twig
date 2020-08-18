@@ -1,0 +1,242 @@
+{% extends "base.html.twig" %}
+
+{% block extraACss %}
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300">
+    <link rel="stylesheet" href="{{ baseUrlAbsolute }}/css/jquery.flex-images.css">
+{% endblock %}
+
+{% block body %}
+    {% include 'Module/search.html.twig' %}
+    <style>
+        #header {
+            width: 100%;
+            z-index: 10;
+            position: fixed;
+            background: white;
+            padding: 1em;
+            font-weight: bold;
+        }
+        body {
+            margin: 0;
+        }
+
+        #flex {
+            padding-top: 5em;
+            padding-left: 2em;
+        }
+
+        #flex .over {
+            line-height: 1.5em;
+            letter-spacing: -0.5px;
+            font-weight: bold;
+            font-family: roboto;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 4px 6px;
+            font-size: 13px;
+            color: #fff;
+            background: rgba(0,0,0,0.7);
+            text-align: center;
+        }
+
+        .flex-images .item img {
+            width: 140px;
+            height: 140px;
+        }
+
+        #search {
+            margin: 0 5px;
+        }
+
+        #flex a:focus > .item {
+            border: 1px solid #e8b12c;
+        }
+
+        #flex a:focus > .item > .over {
+            color: #e8b12c !important;
+        }
+
+        /* STARS */
+        .star.star-1:after {
+            width: 3px;
+        }
+        .star.star-2:after {
+            width: 4px;
+        }
+        .star.star-3:after {
+            width: 5px;
+        }
+        .star.star-4:after {
+            width: 6px;
+        }
+        .star.star-5:after {
+            width: 7px;
+        }
+        .star.star-6:after {
+            width: 8px;
+        }
+        .star.star-7:after {
+            width: 9px;
+        }
+        .star.star-8:after {
+            width: 10px;
+        }
+        .star.star-9:after {
+            width: 11px;
+        }
+
+        .sidenav {
+            height: 100%;
+            position: fixed;
+            z-index: 1;
+            top: 0;
+            left: 0;
+            background-color: #111;
+            overflow-x: hidden;
+            padding: 5em 0;
+        }
+
+        .sidenav a {
+            font-family: roboto;
+            padding: 6px 8px 6px 16px;
+            text-decoration: none;
+            color: #818181;
+            display: block;
+            letter-spacing: -0.5px;
+            line-height: 1em;
+        }
+
+        .sidenav a:hover {
+            color: #f1f1f1;
+        }
+
+        .sidenav ul {
+            list-style-type:none;
+            padding: 0;
+        }
+
+        .sidenav a:focus{
+            color: #e8b12c !important;
+        }
+
+        img:not([src]) {
+            visibility: hidden;
+        }
+
+        /* Fixes Firefox anomaly during image load */
+        @-moz-document url-prefix() {
+            img:-moz-loading {
+                visibility: hidden;
+            }
+        }
+    </style>
+
+    <div id="header">
+        <div class="pull-left">
+            <a href="{{ baseUrlAbsolute ~ homeUrlAbsolute }}" tabindex="5" class="btn">
+                <i class="fa fa-home"></i>
+            </a>
+            {% if catName != '' %}
+                {% if isHidden %}
+                    <a href="{{ baseUrlAbsolute }}/category/unhide/live/{{ currentCat }}" tabindex="6" class="btn">
+                        <i class="fa fa-eye"></i>
+                    </a>
+                {% else %}
+                    <a href="{{ baseUrlAbsolute }}/category/hide/live/{{ currentCat }}" tabindex="6" class="btn">
+                        <i class="fa fa-eye-slash"></i>
+                    </a>
+                {% endif %}
+            {% endif %}
+            {{ catName }}
+        </div>
+        <div class="pull-right">
+            <div class="btn-group" role="group">
+                <a href="{{ baseUrlAbsolute }}/streams/{{ type }}/{{ currentCat }}/{% if sort == 2 %}1{% else %}2{% endif %}/{{ search }}" tabindex="3" class="btn">
+                    <i class="fa fa-sort-alpha-asc"></i>
+                </a>
+            </div>
+            <a tabindex="4" class="btn" id="search">
+                <i class="fa fa-search"></i>
+            </a>
+        </div>
+    </div>
+    <div class="sidenav col-sm-3 col-xs-3 col-md-2">
+        <ul>
+            <a href="{{ baseUrlAbsolute }}/streams/{{ type }}/all"
+               style="{% if currentCat == 'all' and sort != 5 %}color:white{% endif %}"
+               tabindex="2">
+                <li>ALL ({{ nbStreamsByCat["all"] }})</li>
+            </a>
+            <a href="{{ baseUrlAbsolute }}/streams/{{ type }}/favorites"
+               style="{% if currentCat == 'favorites' %}color:white{% endif %}"
+               tabindex="2">
+                <li>FAVORITES ({{ nbStreamsByCat["favorites"] }})</li>
+            </a>
+            {% for category in categories %}
+                <a href="{{ baseUrlAbsolute }}/streams/{{ type }}/{{ category.id }}"
+                   style="{% if catName == category.name %}color:white{% endif %}"
+                   tabindex="2">
+                    <li>
+                        {{ category.name }}
+                        {% if nbStreamsByCat[category.id] is defined %}
+                            ({{ nbStreamsByCat[category.id] }})
+                        {% endif %}
+                    </li>
+                </a>
+            {% endfor %}
+            <a style="opacity: 0.5;"
+               id="hiddenCats"
+               tabindex="2">
+                <li>HIDDEN ({{ nbStreamsByCat["hidden"] }})</li>
+            </a>
+            {% for category in hiddenCategories %}
+                <a href="{{ baseUrlAbsolute }}/streams/{{ type }}/{{ category.id }}"
+                   style="{% if catName == category.name %}color:white;{% endif %} opacity: 0.5; display: none;"
+                   class=" hidden-cat"
+                   tabindex="2">
+                    <li>
+                        {{ category.name }}
+                        {% if nbStreamsByCat[category.id] is defined %}
+                            ({{ nbStreamsByCat[category.id] }})
+                        {% endif %}
+                    </li>
+                </a>
+            {% endfor %}
+        </ul>
+    </div>
+    <div id="flex" class="flex-images col-sm-offset-3 col-sm-9 col-xs-offset-3 col-xs-9 col-md-offset-2 col-md-10">
+        {% if catName == '' and sort == 5 %}
+            {% set sliceMax = 100 %}
+        {% else %}
+            {% set sliceMax = 500 %}
+        {% endif %}
+        {% for stream in streams|slice(0, sliceMax) %}
+            <a href="{{ baseUrlAbsolute }}/streams/liveInfo/{{ stream.name|base64Encode }}"
+               tabindex="1"
+               class="item-link"
+               data-name="{{ stream.name|lower }}"
+               data-added="{{ stream.added.timestamp }}"
+               data-rate="{{ stream.rating5based }}">
+                <div class="item" style="{% if streamView[stream.streamId] is defined %}opacity: 0.3{% endif %}">
+                    <img {% if loop.index > 50 %}data-{% endif %}src="{{ baseUrlAbsolute ~ stream.streamIcon }}"
+                         alt="{{ stream.name }}"
+                         title="{{ stream.name }}">
+                    <div class="over">
+                        {{ stream.name|stripLang }}
+                    </div>
+                </div>
+            </a>
+        {% endfor %}
+    </div>
+    {% include 'Module/lazyload.html.twig' %}
+{% endblock %}
+
+{% block js %}
+    <script>
+        $('#hiddenCats').click(function () {
+            $('.hidden-cat').toggle();
+        });
+    </script>
+{% endblock %}

@@ -1,0 +1,11 @@
+{% extends "base.html.twig" %}
+
+{% block body %}
+<video src="{{ url }}" type='video/x-matroska; codecs="theora, vorbis"' autoplay controls width="100%" id="video"></video>
+{% endblock %}
+
+{% block js %}
+<script type="text/javascript">
+    $('video').height($(window).height());
+</script>
+{% endblock %}
