@@ -88,6 +88,7 @@
                             <i class="fa fa-plus"></i> Favorite
                         </a>
                     {% endif %}
+                    {% include 'Module/shareUrl.html.twig' %}
                     <div class="col-md-12 col-sm-12 col-xs-12">
                         <b>Date :</b>
                         {{ serie.releaseDate|date('d/m/Y') }}

@@ -1,0 +1,17 @@
+{% if isTv == false %}
+    <a data-share-url="{{ currentUrl ~ '?sessid=' ~ sessionId()|base64Encode }}" class="btn btn-info" id="shareUrl">
+        <i class="fa fa-share"></i> Share
+    </a>
+
+    <script type="text/javascript">
+        $('#shareUrl').click(function(){
+            var shareUrl = $(this).data('share-url');
+
+            navigator.clipboard.writeText(shareUrl).then(function() {
+                alert('Url copied to clipboard !')
+            }, function() {
+
+            });
+        });
+    </script>
+{% endif %}

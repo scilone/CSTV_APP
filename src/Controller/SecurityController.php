@@ -17,6 +17,11 @@ class SecurityController
     {
         $this->superglobales = $superglobales;
 
+        if ($this->superglobales->getQuery()->has('sessid')) {
+            session_id(base64_decode($this->superglobales->getQuery()->get('sessid')));
+            session_start();
+        }
+
         if ($this->superglobales->getSession()->get('sessionCreated') + (3600 * 3) < time()
             && $this->superglobales->getCookie()->has('autologId')
         ) {

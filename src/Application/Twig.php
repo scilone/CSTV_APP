@@ -6,6 +6,7 @@ use App\Infrastructure\SuperglobalesOO;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
 use Twig\TwigFilter;
+use Twig\TwigFunction;
 
 class Twig
 {
@@ -31,6 +32,7 @@ class Twig
 
         $this->addGenericVars();
         $this->addGenericFilters();
+        $this->addGenericFunctions();
     }
 
     private function addGenericFilters(): void
@@ -46,12 +48,18 @@ class Twig
         );
     }
 
+    private function addGenericFunctions(): void
+    {
+        $this->twig->addFunction(new TwigFunction('sessionId', 'session_id'));
+    }
+
     private function addGenericVars(): void
     {
         $userAgent = $this->superglobales->getServer()->get('HTTP_USER_AGENT');
 
         $this->twig->addGlobal(
             'isIos',
+            $isIos =
             stripos($userAgent, 'iPod') !== false
             || stripos($userAgent, 'iPad') !== false
             || stripos($userAgent, 'iPhone') !== false
@@ -59,15 +67,24 @@ class Twig
 
         $this->twig->addGlobal(
             'isTv',
-            strpos($userAgent, 'TV') !== false
-            || stripos($userAgent, 'Tizen') !== false
-            || stripos($userAgent, 'Web0S') !== false
-            || stripos($userAgent, 'BRAVIA') !== false
-            || stripos($userAgent, 'MIBOX') !== false
+            $isTv = strpos($userAgent, 'TV') !== false
+                    || stripos($userAgent, 'Tizen') !== false
+                    || stripos($userAgent, 'Web0S') !== false
+                    || stripos($userAgent, 'BRAVIA') !== false
+                    || stripos($userAgent, 'MIBOX') !== false
         );
 
-        $this->twig->addGlobal('isAndroid', stripos($userAgent, 'Android') !== false);
-        $this->twig->addGlobal('isChrome', stripos($userAgent, 'Chrome') !== false);
+        $this->twig->addGlobal('isAndroid', $isAndroid = stripos($userAgent, 'Android') !== false);
+        $this->twig->addGlobal('isChrome', $isChrome = stripos($userAgent, 'Chrome') !== false);
+
+        if ($isIos === false && $isAndroid === false && $isTv === false) {
+            $this->twig->addGlobal('vlcDeeplink', '');
+        }
+
+        $currentUrl = 'https://' . $this->superglobales->getServer()->get('HTTP_HOST')
+                      . $this->superglobales->getServer()->get('REQUEST_URI');
+
+        $this->twig->addGlobal('currentUrl', $currentUrl);
     }
 
     /**

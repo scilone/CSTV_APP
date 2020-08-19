@@ -128,6 +128,9 @@ class StreamsController extends SecurityController
         if (isset($streams['4K'])) {
             $streamsSorted['4K'] = $streams['4K'];
         }
+        if (isset($streams['UHD'])) {
+            $streamsSorted['UHD'] = $streams['UHD'];
+        }
         if (isset($streams['FHD'])) {
             $streamsSorted['FHD'] = $streams['FHD'];
         }
@@ -140,14 +143,17 @@ class StreamsController extends SecurityController
         if (isset($streams['SD'])) {
             $streamsSorted['SD'] = $streams['SD'];
         }
+        if (isset($streams['LQ'])) {
+            $streamsSorted['LQ'] = $streams['LQ'];
+        }
         $streamsSorted += $streams;
 
         if (count($streamsSorted) === 1) {
             $stream = current($streamsSorted);
 
             if ($stream->getTvArchive() < 1) {
-                header('Location: ' . Param::VLC_DEEPLINK . $stream->getStreamLink());
-                exit;
+                /*header('Location: ' . Param::VLC_DEEPLINK . $stream->getStreamLink());
+                exit;*/
             }
         }
 

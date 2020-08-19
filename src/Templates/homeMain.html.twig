@@ -15,7 +15,6 @@
                 </div>
                 <div class="b-content home">
                     {% if not hasExpired %}
-                        {% if isAndroid or isIos %}
                         <div class="col-md-4 col-sm-4 col-xs-12" id="divLive">
                             {% if hasMovieFavorites %}
                             <a href="{{ baseUrlAbsolute }}/streams/live/favorites" tabindex="2" class="homeLink">
@@ -29,7 +28,6 @@
                                 </div>
                             </a>
                         </div>
-                        {% endif %}
 
                         <div class="col-md-4 col-sm-4 col-xs-12">
                             {% if hasMovieFavorites %}

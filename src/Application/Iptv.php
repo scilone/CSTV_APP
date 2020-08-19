@@ -216,7 +216,11 @@ class Iptv
 
             $name = $data->name ?? '';
             if (isset($filter['cat'])) {
-                $name = str_replace(['SD','FHD', 'HD','4K','sd','hd','fhd','4k'], '', $name);
+                $name = str_replace(
+                    ['SD','LQ','FHD','HD', 'HEVC','UHD','4K','sd', 'lq','hd', 'hevc','fhd','uhd','4k'],
+                    '',
+                    $name
+                );
                 $name = trim($name);
             }
 
@@ -250,7 +254,11 @@ class Iptv
 
     private function stripQuality(string $string): string
     {
-        return str_replace(['SD','FHD', 'HD','4K','sd','hd','fhd','4k'], '', $string);
+        return str_replace(
+            ['SD','LQ','UHD','FHD','HD', 'HEVC','4K','sd','lq','uhd','fhd','hd','hevc','4k'],
+            '',
+            $string
+        );
     }
 
     public function getLiveStreamsByName(string $searchedName)
@@ -283,8 +291,12 @@ class Iptv
             $quality = '';
             if (stripos($data->name, 'SD') !== false) {
                 $quality = 'SD';
+            } elseif (stripos($data->name, 'LQ') !== false) {
+                $quality = 'LQ';
             } elseif (stripos($data->name, 'FHD') !== false) {
                 $quality = 'FHD';
+            } elseif (stripos($data->name, 'UHD') !== false) {
+                $quality = 'UHD';
             } elseif (stripos($data->name, '4K') !== false) {
                 $quality = '4K';
             } elseif (stripos($data->name, 'HEVC') !== false) {
