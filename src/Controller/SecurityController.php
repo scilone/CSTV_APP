@@ -22,10 +22,12 @@ class SecurityController
             session_start();
         }
 
-        if ($this->superglobales->getSession()->get('sessionCreated') + (3600 * 3) < time()
-            && $this->superglobales->getCookie()->has('autologId')
+        if ($this->superglobales->getSession()->has('sessionCreated')
+            && $this->superglobales->getSession()->get('sessionCreated') + (3600 * 2) < time()
         ) {
             $this->setCookieRedirect();
+
+            session_destroy();
 
             header('Location: ' . Param::BASE_URL_ABSOLUTE . '/account/autolog');
             exit;
