@@ -11,12 +11,8 @@ class AssetController
 
         if ($strFileExt == 'jpg' or $strFileExt == 'jpeg') {
             header('Content-Type: image/jpeg');
-        } elseif ($strFileExt == 'png') {
-            header('Content-Type: image/png');
-        } elseif ($strFileExt == 'gif') {
-            header('Content-Type: image/gif');
         } else {
-            die('not supported');
+            header("Content-Type: image/$strFileExt");
         }
 
         if ($strFile !== '') {

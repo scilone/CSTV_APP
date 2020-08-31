@@ -253,7 +253,11 @@ class StreamsController extends SecurityController
         $nbStreamsByCat += ['hidden' => $hiddenStreams];
 
         if ($category === 'favorites') {
-            $favorites = $this->superglobales->getSession()->get('favorites')['live'];
+            $favorites = [];
+            foreach ($this->superglobales->getSession()->get('favorites')['live'] as $k => $v) {
+                $favorites[base64_encode($this->stripQuality(base64_decode($k)))] = $v;
+            }
+
             $streams = array_filter($streams, function ($var) use ($favorites) {
                 return isset($favorites[base64_encode($var->getName())]);
             });
@@ -359,6 +363,15 @@ class StreamsController extends SecurityController
         );
 
         echo $render;
+    }
+
+    private function stripQuality(string $string): string
+    {
+        return trim(str_replace(
+            ['SD','LQ','UHD','FHD','HD', 'HEVC','4K','sd','lq','uhd','fhd','hd','hevc','4k'],
+            '',
+            $string
+        ));
     }
 
     public function movieInfo(string $id): void
