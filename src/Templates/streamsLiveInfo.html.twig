@@ -82,13 +82,13 @@
             margin-bottom: 1em
         }
     </style>
-    <div class="container" style="margin: 3em; width: auto">
+    <div class="container">
         <div class="row">
             <div class="col-md-12 col-sm-12 col-xs-12">
                 <h1 style="text-align: center; margin-bottom: 1em"><img src="{{ baseUrlAbsolute ~ img }}" width="100px" > {{ name }}</h1>
             </div>
             <div class="col-md-12 col-sm-12 col-xs-12">
-                <div class="col-lg-1 col-md-2 col-sm-3 col-xs-3">
+                <div class="col-lg-1 col-md-2 col-sm-3 col-xs-4">
                     {% set hasTvArchive = false %}
                     {% for quality, stream in streams %}
                             <a href="{{ vlcDeeplink ~ stream.streamLink }}" tabindex="1" class="btn btn-success">
@@ -123,7 +123,7 @@
                     {% endif %}
                     {% include 'Module/shareUrl.html.twig' %}
                 </div>
-                <div class="col-lg-11 col-md-10 col-sm-9 col-xs-9">
+                <div class="col-lg-11 col-md-10 col-sm-9 col-xs-8">
                     <table>
                         {% for epg in shortEpg %}
                             <tr>

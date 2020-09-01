@@ -58,8 +58,8 @@
                 <h1 style="text-align: center;">{{ movie.name }}</h1>
             </div>
             <div>
-                <div class="col-lg-2 col-md-2 col-sm-3 col-xs-3">
-                    <img src="{{ baseUrlAbsolute ~ movie.image }}" width="100" height="160" class="col-md-12 col-sm-12 col-xs-12">
+                <div class="col-lg-2 col-md-2 col-sm-3 col-xs-12">
+                    <img src="{{ baseUrlAbsolute ~ movie.image }}" width="100" class="col-md-12 col-sm-12 col-xs-12">
                     <div class="col-md-12 col-sm-12 col-xs-12">
                         {% if streamView[movie.streamId] is defined %}
                             <div style="height: 2px;background: #d43f3a;"></div>
@@ -106,7 +106,7 @@
                         {% include 'Module/shareUrl.html.twig' %}
                     </div>
                 </div>
-                <div class="col-lg-10 col-md-10 col-sm-9 col-xs-9">
+                <div class="col-lg-10 col-md-10 col-sm-9 col-xs-12">
                     <table>
                         <tr>
                             <td><b>Director:</b></td>
@@ -145,6 +145,6 @@
 
 {% block bg %}
     {% if movie.backdropPath[0] is not empty %}
-    <img class="body-bg" src="{{ baseUrlAbsolute ~ movie.backdropPath[0] }}">
+    <img class="body-bg" src="{{ baseUrlAbsolute ~ random(movie.backdropPath) }}">
     {% endif %}
 {% endblock %}

@@ -278,12 +278,6 @@ input:focus, textarea:focus, input[type="text"]:focus {
     padding-bottom: 66px;
 }
 
-@media (max-width: 768px) {
-    .navbar {
-        padding-bottom: 51px;
-    }
-}
-
 .b-content {
     padding: 10px 20px;
 }
@@ -1228,6 +1222,7 @@ a.btn {
     -webkit-appearance: initial;
     background: lightgray;
     font-weight: bold;
+    white-space: normal;
 }
 a.btn:focus, a.btn:hover {
     outline: none;

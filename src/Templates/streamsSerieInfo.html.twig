@@ -57,14 +57,14 @@
             width: 100%;
         }
     </style>
-    <div class="container" style="margin: 3em; width: auto">
+    <div class="container">
         <div class="row">
             <div class="col-md-12 col-sm-12 col-xs-12">
                 <h1 style="text-align: center;">{{ serie.name }}</h1>
             </div>
             <div>
-                <div class="sidenav col-md-3 col-sm-3 col-xs-3">
-                    <img src="{{ baseUrlAbsolute ~ serie.cover }}" class="col-md-12 col-sm-12 col-xs-12">
+                <div class="sidenav col-md-3 col-sm-3 col-xs-8 col-xs-offset-2 col-sm-offset-0" style="margin-bottom: 2em;">
+                    <img src="{{ baseUrlAbsolute ~ serie.cover }}" class="col-md-12 col-sm-12 col-xs-12" >
                     <div class="col-md-12 col-sm-12 col-xs-12">
                         {% include 'Module/stars.html.twig' with {'rating': serie.rating5based} %}
                     </div>
@@ -98,29 +98,33 @@
                         {{ serie.genre }}
                     </div>
                 </div>
-                <div class="col-md-9 col-sm-9 col-xs-9">
-                    <div class="col-md-2 col-sm-2 col-xs-2">
+                <div class="col-md-9 col-sm-9 col-xs-12">
+                    <div class="col-md-2 col-sm-2 col-xs-3">
                         <b>Director:</b>
                     </div>
-                    <div class="col-md-10 col-sm-10 col-xs-10">
-                        {{ serie.director }}
+                    <div class="col-md-10 col-sm-10 col-xs-9">
+                        {{ serie.director }}&nbsp;
                     </div>
-                    <div class="col-md-2 col-sm-2 col-xs-2">
+                    <div class="col-md-2 col-sm-2 col-xs-3">
                         <b>Casting:</b>
                     </div>
-                    <div class="col-md-10 col-sm-10 col-xs-10">
-                        {{ serie.cast }}
+                    <div class="col-md-10 col-sm-10 col-xs-9">
+                        {{ serie.cast }}&nbsp;
                     </div>
-                    <div class="col-md-2 col-sm-2 col-xs-2">
+                    <div class="col-md-2 col-sm-2 col-xs-3">
                         <b>Resume:</b>
                     </div>
-                    <div class="col-md-10 col-sm-10 col-xs-10">
-                        <p>{{ serie.plot }}</p>
+                    <div class="col-md-10 col-sm-10 col-xs-9">
+                        <p>{{ serie.plot }}&nbsp;</p>
                     </div>
                     <div class="col-md-7 col-sm-7 col-xs-7">
                         <select class="form-control" id="seasonChoice" style="margin-top: 2em;">
                             {% for season, episodes in serie.episodes %}
+                                {% if serie.seasons[season] is not empty %}
                                 <option value="{{ season }}">{{ serie.seasons[season].name }}</option>
+                                {% else %}
+                                <option value="{{ season }}">Season {{ season }}</option>
+                                {% endif %}
                             {% endfor %}
                         </select>
                     </div>
@@ -157,19 +161,19 @@
                                         {% set rating5 = (episode.rating/2)|round(1)  %}
                                         {% include 'Module/stars.html.twig' with {'rating': rating5} %}
                                     </div>
-                                    <div class="col-md-3 col-sm-3 col-xs-3">
+                                    <div class="col-md-3 col-sm-3 col-xs-3" style="padding: 0;">
                                         {% if isAndroid or isIos %}
-                                        <a href="{{ baseUrlAbsolute }}/streams/flagAsView/serie/{{ episode.id }}/{{ (vlcDeeplink ~ episode.streamLink)|base64Encode }}" tabindex="1" class="btn btn-primary pull-right" style="width: 80%; font-size: 10px">
+                                        <a href="{{ baseUrlAbsolute }}/streams/flagAsView/serie/{{ episode.id }}/{{ (vlcDeeplink ~ episode.streamLink)|base64Encode }}" tabindex="1" class="btn btn-primary pull-right" style="font-size: 10px">
                                             Play
                                         </a>
                                         {% endif %}
                                         {% if not isIos and not isAndroid and isChrome  %}
-                                        <a href="{{ baseUrlAbsolute }}/streams/flagAsView/serie/{{ episode.id }}/{{ (baseUrlAbsolute ~ "/streams/play/serie/" ~ serie.id ~ "/" ~ season ~ "/" ~ episode.episodeNum)|base64Encode }}" tabindex="1" class="btn btn-success pull-right" style="width: 80%; font-size: 10px">
+                                        <a href="{{ baseUrlAbsolute }}/streams/flagAsView/serie/{{ episode.id }}/{{ (baseUrlAbsolute ~ "/streams/play/serie/" ~ serie.id ~ "/" ~ season ~ "/" ~ episode.episodeNum)|base64Encode }}" tabindex="1" class="btn btn-success pull-right" style="font-size: 10px">
                                             Webplayer
                                         </a>
                                         {% endif %}
                                         {% if not isTv %}
-                                        <a href="{{ episode.streamLink }}" tabindex="1" class="btn btn-default pull-right" style="width: 80%; font-size: 10px">
+                                        <a href="{{ episode.streamLink }}" tabindex="1" class="btn btn-default pull-right" style="font-size: 10px">
                                             Download
                                         </a>
                                         {% endif %}
@@ -228,7 +232,7 @@
 {% endblock %}
 
 {% block bg %}
-    {% if movie.backdropPath[0] is not empty %}
-        <img class="body-bg" src="{{ baseUrlAbsolute ~ serie.backdropPath[0] }}">
+    {% if serie.backdropPath[0] is not empty %}
+        <img class="body-bg" src="{{ baseUrlAbsolute ~ random(serie.backdropPath) }}">
     {% endif %}
 {% endblock %}
