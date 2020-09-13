@@ -218,30 +218,37 @@
         </ul>
     </div>
     <div id="flex" class="flex-images col-sm-offset-3 col-sm-9 col-xs-offset-3 col-xs-9 col-md-offset-2 col-md-10">
-        {% if catName == '' and sort == 5 %}
-            {% set sliceMax = 100 %}
+        {% if not contentAlloweded %}
+            <form method="post" class="form-inline" >
+                <input type="password" name="pass" class="form-control" autocomplete="off" placeholder="Password">
+                <input type="submit" class="btn btn-default" value="Ok">
+            </form>
         {% else %}
-            {% set sliceMax = 500 %}
-        {% endif %}
-        {% for stream in streams|slice(0, sliceMax) %}
-            <a href="{{ baseUrlAbsolute }}/streams/movieInfo/{{ stream.streamid }}"
-               tabindex="1"
-               class="item-link"
-               data-name="{{ stream.name|lower }}"
-               data-added="{{ stream.added.timestamp }}"
-               data-rate="{{ stream.rating5based }}">
-                <div class="item" style="{% if streamView[stream.streamId] is defined %}opacity: 0.3{% endif %}">
-                    <img {% if loop.index > 50 %}data-{% endif %}src="{{ baseUrlAbsolute ~ stream.streamIcon }}"
-                         alt="{{ stream.name }}"
-                         title="{{ stream.name }}">
-                    <div class="over">
-                        {{ stream.name }}
+            {% if catName == '' and sort == 5 %}
+                {% set sliceMax = 100 %}
+            {% else %}
+                {% set sliceMax = 500 %}
+            {% endif %}
+            {% for stream in streams|slice(0, sliceMax) %}
+                <a href="{{ baseUrlAbsolute }}/streams/movieInfo/{{ stream.streamid }}"
+                   tabindex="1"
+                   class="item-link"
+                   data-name="{{ stream.name|lower }}"
+                   data-added="{{ stream.added.timestamp }}"
+                   data-rate="{{ stream.rating5based }}">
+                    <div class="item" style="{% if streamView[stream.streamId] is defined %}opacity: 0.3{% endif %}">
+                        <img {% if loop.index > 50 %}data-{% endif %}src="{{ baseUrlAbsolute ~ stream.streamIcon }}"
+                             alt="{{ stream.name }}"
+                             title="{{ stream.name }}">
+                        <div class="over">
+                            {{ stream.name }}
 
-                        {% include 'Module/stars.html.twig' with {'rating': stream.rating5based} %}
+                            {% include 'Module/stars.html.twig' with {'rating': stream.rating5based} %}
+                        </div>
                     </div>
-                </div>
-            </a>
-        {% endfor %}
+                </a>
+            {% endfor %}
+        {% endif %}
     </div>
     {% include 'Module/lazyload.html.twig' %}
 {% endblock %}

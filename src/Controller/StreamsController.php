@@ -238,6 +238,15 @@ class StreamsController extends SecurityController
 
         $catName = isset($categories[$category]) ? $categories[$category]->getName() : '';
 
+        $contentAlloweded = true;
+        if (mb_stripos($catName, 'adult') || mb_stripos($catName, '18')) {
+            $contentAlloweded = false;
+
+            if (md5($this->superglobales->getPost()->get('pass')) === $this->superglobales->getSession()->get('SKey')) {
+                $contentAlloweded = true;
+            }
+        }
+
         $hiddenCategories = [];
         $hiddenStreams = 0;
         if (isset($this->superglobales->getSession()->get('hiddenCategories')['live'])) {
@@ -282,6 +291,7 @@ class StreamsController extends SecurityController
                 'hiddenCategories' => $hiddenCategories,
                 'catName'          => $catName,
                 'nbStreamsByCat'   => $nbStreamsByCat,
+                'contentAlloweded' => $contentAlloweded,
                 'isHidden'         => isset($categories[$category]) ? false : true
             ]
         );
@@ -316,6 +326,15 @@ class StreamsController extends SecurityController
         $nbStreamsByCat += ['favorites' => count($this->superglobales->getSession()->get('favorites')['movie'] ?? [])];
 
         $catName = isset($categories[$category]) ? $categories[$category]->getName() : '';
+
+        $contentAlloweded = true;
+        if (mb_stripos($catName, 'adult') || mb_stripos($catName, '18')) {
+            $contentAlloweded = false;
+
+            if (md5($this->superglobales->getPost()->get('pass')) === $this->superglobales->getSession()->get('SKey')) {
+                $contentAlloweded = true;
+            }
+        }
 
         $hiddenCategories = [];
         $hiddenStreams    = 0;
@@ -357,6 +376,7 @@ class StreamsController extends SecurityController
                 'hiddenCategories' => $hiddenCategories,
                 'catName'          => $catName,
                 'isHidden'         => isset($categories[$category]) ? false : true,
+                'contentAlloweded' => $contentAlloweded,
                 'nbStreamsByCat'   => $nbStreamsByCat,
                 'streamView'       => $this->superglobales->getSession()->get('flaggedStreams')['movie']
             ]
