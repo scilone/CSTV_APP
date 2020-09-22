@@ -275,7 +275,29 @@ class StreamsController extends SecurityController
         if ($search !== '') {
             $searchCleaned = $this->cleanSearch($search);
             $streams = array_filter($streams, function ($var) use ($searchCleaned) {
+                if (stripos($var->getName(), '♀') !== false) {
+                    return false;
+                }
+
+                if (stripos($var->getName(), 'xxx') !== false) {
+                    return false;
+                }
+
                 return stripos($this->cleanSearch($var->getName()), $searchCleaned) !== false;
+            });
+        }
+
+        if ($category === 'all') {
+            $streams = array_filter($streams, function ($var) use ($searchCleaned) {
+                if (stripos($var->getName(), '♀') !== false) {
+                    return false;
+                }
+
+                if (stripos($var->getName(), 'xxx') !== false) {
+                    return false;
+                }
+
+                return true;
             });
         }
 
@@ -319,8 +341,8 @@ class StreamsController extends SecurityController
             $filter['cat'] = $category;
         }
 
-        $streams        = $this->iptv->getMovieStreams($filter, $sort);
-        $categories     = $this->iptv->getMovieCategories();
+        $streams    = $this->iptv->getMovieStreams($filter, $sort);
+        $categories = $this->iptv->getMovieCategories();
 
         $nbStreamsByCat = $this->iptv->getNbStreamByCat('movie');
         $nbStreamsByCat += ['favorites' => count($this->superglobales->getSession()->get('favorites')['movie'] ?? [])];
@@ -360,7 +382,29 @@ class StreamsController extends SecurityController
         if ($search !== '') {
             $searchCleaned = $this->cleanSearch($search);
             $streams = array_filter($streams, function ($var) use ($searchCleaned) {
+                if (stripos($var->getName(), '♀') !== false) {
+                    return false;
+                }
+
+                if (stripos($var->getName(), 'xxx') !== false) {
+                    return false;
+                }
+
                 return stripos($this->cleanSearch($var->getName()), $searchCleaned) !== false;
+            });
+        }
+
+        if ($category === 'all') {
+            $streams = array_filter($streams, function ($var) use ($searchCleaned) {
+                if (stripos($var->getName(), '♀') !== false) {
+                    return false;
+                }
+
+                if (stripos($var->getName(), 'gims') !== false) {
+                    return false;
+                }
+
+                return true;
             });
         }
 
