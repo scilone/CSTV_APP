@@ -37,6 +37,8 @@ class StreamsController extends SecurityController
      */
     private $account;
 
+    private $isAjax = false;
+
     public function __construct(
         Twig $twig,
         Iptv $iptv,
@@ -51,6 +53,10 @@ class StreamsController extends SecurityController
         $this->account       = $account;
 
         parent::__construct($superglobales);
+
+        if ($this->superglobales->getServer()->get('HTTP_X_REQUESTED_WITH', '') === 'XMLHttpRequest') {
+            $this->isAjax = true;
+        }
     }
 
     public function play(string $type, string $id, string $season = '', string $episode = '')
@@ -173,52 +179,6 @@ class StreamsController extends SecurityController
         echo $render;
     }
 
-    public function liveOld(string $category): void
-    {
-        $filter = [];
-        if (is_numeric($category)) {
-            $filter['cat'] = $category;
-        } elseif ($category === 'favorites') {
-            $filter['cat'] = 'favorites';
-        }
-
-        $streams    = $this->iptv->getLiveStreams($filter);
-        $categories = $this->iptv->getLiveCategories();
-
-        $catName = isset($categories[$category]) ? $categories[$category]->getName() : '';
-
-        $hiddenCategories = [];
-        if (isset($this->superglobales->getSession()->get('hiddenCategories')['live'])) {
-            foreach ($categories as $keyCat => $cat) {
-                if (isset($this->superglobales->getSession()->get('hiddenCategories')['live'][$cat->getId()])) {
-                    $hiddenCategories[] = $cat;
-                    unset($categories[$keyCat]);
-                }
-            }
-        }
-
-        if ($category === 'favorites') {
-            $favorites = $this->superglobales->getSession()->get('favorites')['live'];
-            $streams = array_filter($streams, function ($var) use ($favorites) {
-                return isset($favorites[base64_encode($var->getName())]);
-            });
-        }
-
-        $render = $this->twig->render(
-            'streamsLiveOld.html.twig',
-            [
-                'streams'          => $streams,
-                'catName'          => $catName,
-                'type'             => 'live',
-                'currentCat'       => $category,
-                'hiddenCategories' => $hiddenCategories,
-                'isHidden'         => isset($categories[$category]) ? false : true,
-            ]
-        );
-
-        echo $render;
-    }
-
     public function live(string $category, int $sort = 0, string $search = ''): void
     {
         $search = urldecode($search);
@@ -302,8 +262,9 @@ class StreamsController extends SecurityController
         }
 
         $render = $this->twig->render(
-            'streamsLive.html.twig',
+            ($this->isAjax ? 'ajax/' : '') . 'streamsLive.html.twig',
             [
+                'start'            => $this->superglobales->getQuery()->get('start', 0),
                 'streams'          => $streams,
                 'type'             => 'live',
                 'sort'             => $sort,
@@ -409,8 +370,9 @@ class StreamsController extends SecurityController
         }
 
         $render = $this->twig->render(
-            'streamsMovie.html.twig',
+            ($this->isAjax ? 'ajax/' : '') . 'streamsMovie.html.twig',
             [
+                'start'            => $this->superglobales->getQuery()->get('start', 0),
                 'streams'          => $streams,
                 'type'             => 'movie',
                 'sort'             => $sort,
@@ -512,8 +474,9 @@ class StreamsController extends SecurityController
         }
 
         $render = $this->twig->render(
-            'streamsSerie.html.twig',
+            ($this->isAjax ? 'ajax/' : '') . 'streamsSerie.html.twig',
             [
+                'start'            => $this->superglobales->getQuery()->get('start', 0),
                 'streams'          => $streams,
                 'type'             => 'serie',
                 'sort'             => $sort,

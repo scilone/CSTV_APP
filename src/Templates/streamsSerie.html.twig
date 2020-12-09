@@ -207,12 +207,7 @@
         </ul>
     </div>
     <div id="flex" class="flex-images col-sm-offset-3 col-sm-9 col-xs-offset-3 col-xs-9 col-md-offset-2 col-md-10">
-        {% if catName == '' and sort == 5 %}
-            {% set sliceMax = 100 %}
-        {% else %}
-            {% set sliceMax = 500 %}
-        {% endif %}
-        {% for stream in streams|slice(0, sliceMax) %}
+        {% for stream in streams|slice(start, maxContentPerPage) %}
             <a href="{{ baseUrlAbsolute }}/streams/serieInfo/{{ stream.serieId }}"
                tabindex="1"
                class="item-link"
@@ -220,7 +215,7 @@
                data-added="{{ stream.added.timestamp }}"
                data-rate="{{ stream.rating5based }}">
                 <div class="item">
-                    <img {% if loop.index > 50 %}data-{% endif %}src="{{ baseUrlAbsolute ~ stream.cover }}"
+                    <img {# if loop.index > 50 %}data-{% endif #}src="{{ baseUrlAbsolute ~ stream.cover }}"
                          alt="{{ stream.name }}"
                          title="{{ stream.name }}">
                     <div class="over">

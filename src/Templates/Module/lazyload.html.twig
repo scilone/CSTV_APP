@@ -1,27 +1,54 @@
-<style>img:not([src]) {
-            visibility: hidden;
-        }
+{#<style>img:not([src]) {#}
+{#            visibility: hidden;#}
+{#        }#}
 
-        /* Fixes Firefox anomaly during image load */
-        @-moz-document url-prefix() {
-            img:-moz-loading {
-                visibility: hidden;
-            }
-        }
-    img:not([src]) {
-        visibility: hidden;
-    }
+{#        /* Fixes Firefox anomaly during image load */#}
+{#        @-moz-document url-prefix() {#}
+{#            img:-moz-loading {#}
+{#                visibility: hidden;#}
+{#            }#}
+{#        }#}
+{#    img:not([src]) {#}
+{#        visibility: hidden;#}
+{#    }#}
 
-    /* Fixes Firefox anomaly during image load */
-    @-moz-document url-prefix() {
-        img:-moz-loading {
-            visibility: hidden;
-        }
-    }
-</style>
+{#    /* Fixes Firefox anomaly during image load */#}
+{#    @-moz-document url-prefix() {#}
+{#        img:-moz-loading {#}
+{#            visibility: hidden;#}
+{#        }#}
+{#    }#}
+{#</style>#}
+{#<script type="text/javascript">#}
+{#    window.lazyLoadOptions = {#}
+{#        threshold: 0#}
+{#    };#}
+{#</script>#}
+{#<script async src="{{ baseUrlAbsolute }}/js/lazyload.min.js"></script>#}
+<script src="{{ baseUrlAbsolute }}/js/jquery.visible.min.js"></script>
 <script type="text/javascript">
-    window.lazyLoadOptions = {
-        threshold: 0
-    };
+    let itemsLoad = 0;
+
+    $(document).ready(function () {
+        itemsLoad = getContent(itemsLoad);
+
+        $(document).on('scroll', function () {
+            itemsLoad = getContent(itemsLoad);
+        })
+    });
+
+    function getContent(itemsLoad) {
+        if ($('.item:eq(-20)').visible(true) && itemsLoad !== $('.item').length) {
+            itemsLoad = $('.item').length;
+
+            jQuery.get(
+                "{{ baseUrlAbsolute }}/streams/{{ type }}/{{ currentCat }}/{{ sort }}/{{ search }}?start=" + itemsLoad,
+                function(data) {
+                    $('#flex').append(data);
+                }
+            );
+        }
+
+        return itemsLoad;
+    }
 </script>
-<script async src="{{ baseUrlAbsolute }}/js/lazyload.min.js"></script>

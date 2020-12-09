@@ -224,12 +224,7 @@
                 <input type="submit" class="btn btn-default" value="Ok">
             </form>
         {% else %}
-            {% if catName == '' and sort == 5 %}
-                {% set sliceMax = 100 %}
-            {% else %}
-                {% set sliceMax = 500 %}
-            {% endif %}
-            {% for stream in streams|slice(0, sliceMax) %}
+            {% for stream in streams|slice(start, maxContentPerPage) %}
                 <a href="{{ baseUrlAbsolute }}/streams/movieInfo/{{ stream.streamid }}"
                    tabindex="1"
                    class="item-link"
@@ -237,7 +232,7 @@
                    data-added="{{ stream.added.timestamp }}"
                    data-rate="{{ stream.rating5based }}">
                     <div class="item" style="{% if streamView[stream.streamId] is defined %}opacity: 0.3{% endif %}">
-                        <img {% if loop.index > 50 %}data-{% endif %}src="{{ baseUrlAbsolute ~ stream.streamIcon }}"
+                        <img {# if loop.index > 50 %}data-{% endif #}src="{{ baseUrlAbsolute ~ stream.streamIcon }}"
                              alt="{{ stream.name }}"
                              title="{{ stream.name }}">
                         <div class="over">
