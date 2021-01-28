@@ -35,11 +35,26 @@ class AccountController
 
     public function iptv()
     {
+        if ($this->superglobales->getPost()->has('m3u')) {
+            $m3uParsed      = parse_url($this->superglobales->getPost()->get('m3u'));
+            parse_str($m3uParsed['query'], $m3uQueryParsed);
+            $host = "{$m3uParsed['scheme']}://{$m3uParsed['host']}:{$m3uParsed['port']}";
+
+
+            $this->account->setIptvInfo(
+                $m3uQueryParsed['username'],
+                $m3uQueryParsed['password'],
+                $host
+            );
+
+            $this->redirectToHome();
+        }
+
         if ($this->superglobales->getPost()->has('username')) {
             $this->account->setIptvInfo(
                 $this->superglobales->getPost()->get('username'),
                 $this->superglobales->getPost()->get('password'),
-                $this->superglobales->getPost()->get('host'),
+                $this->superglobales->getPost()->get('host')
             );
 
             $this->redirectToHome();

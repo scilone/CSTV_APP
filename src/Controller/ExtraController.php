@@ -23,4 +23,9 @@ class ExtraController
     {
         echo $this->twig->render('extraSpeedtest.html.twig');
     }
+
+    public function fast(): void
+    {
+        echo $this->twig->render('extraFasttest.html.twig');
+    }
 }
