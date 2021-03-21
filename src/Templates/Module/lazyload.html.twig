@@ -39,10 +39,11 @@
 
     function getContent(itemsLoad) {
         if ($('.item:eq(-20)').visible(true) && itemsLoad !== $('.item').length) {
+            let urlQuery = (window.location.search).replace('?', '');
             itemsLoad = $('.item').length;
 
             jQuery.get(
-                "{{ baseUrlAbsolute }}/streams/{{ type }}/{{ currentCat }}/{{ sort }}/{{ search }}?start=" + itemsLoad,
+                "{{ baseUrlAbsolute }}/streams/{{ type }}/{{ currentCat }}/{{ sort }}/{{ search }}?start=" + itemsLoad + '&' + urlQuery,
                 function(data) {
                     $('#flex').append(data);
                 }

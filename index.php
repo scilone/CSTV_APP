@@ -8,15 +8,28 @@ if (isset($_GET['debug'])) {
     ini_set('log_errors', 'On');
 }
 
+if (isset($_GET['pre'])) {
+    echo '<pre>';
+}
+
 require __DIR__ . '/vendor/autoload.php';
 
-$completeUrl = $_SERVER['REQUEST_URI'];
-$indexFile   = @end(explode('/', $_SERVER['SCRIPT_FILENAME']));
-$indexPath   = $_SERVER['PHP_SELF'];
-$basePath    = str_replace($indexFile, '', $indexPath);
-$envPath     = str_replace($basePath, '', $completeUrl);
+if (isset($argv) && is_array($argv) && count($argv) > 0) {
+    error_reporting(E_ALL);
+    ini_set('display_errors', 'On');
+    ini_set('log_errors', 'On');
 
-$params = explode('/', parse_url($envPath, PHP_URL_PATH));
+    $params = $argv;
+    array_shift($params);
+} else {
+    $completeUrl = $_SERVER['REQUEST_URI'];
+    $indexFile   = @end(explode('/', $_SERVER['SCRIPT_FILENAME']));
+    $indexPath   = $_SERVER['PHP_SELF'];
+    $basePath    = str_replace($indexFile, '', $indexPath);
+    $envPath     = str_replace($basePath, '', $completeUrl);
+
+    $params = explode('/', parse_url($envPath, PHP_URL_PATH));
+}
 
 if (in_array($params[0] ?? '', ['css', 'img', 'js'])) {
     $asset = __DIR__ . '/assets/' . parse_url($envPath, PHP_URL_PATH);

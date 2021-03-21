@@ -57,31 +57,33 @@
                     {% endif %}
 
                     <div class="col-md-12 col-sm-12 col-xs-12 Mybtns">
-                        <div class="col-md-3 col-sm-12 col-xs-12">
+                        <div class="col-md-4 col-sm-12 col-xs-12">
                             <a class="btn center-block btn-lg account rippler rippler-default"
                                href="{{ baseUrlAbsolute }}/account/autolog">
-                                <i class="fa fa-info"></i> SYNC DATA
+                                <i class="fa fa-refresh"></i> SYNC DATA
                             </a>
                         </div>
-                        <div class="col-md-3 col-sm-6 col-xs-6">
-                            <a class="btn center-block btn-lg account rippler rippler-default"
-                               href="{{ baseUrlAbsolute }}/extra/speedtest">
-                                <i class="fa fa-tachometer"></i> SPEEDTEST
-                            </a>
-                        </div>
-                        <div class="col-md-3 col-sm-6 col-xs-6">
-                            <a class="btn center-block btn-lg account rippler rippler-default"
-                               href="{{ baseUrlAbsolute }}/extra/fast">
-                                <i class="fa fa-tachometer"></i> FAST
-                            </a>
-                        </div>
-                        <div class="col-md-3 col-sm-12 col-xs-12">
+                        {% if isTv %}
+                            <div class="col-md-3 col-sm-6 col-xs-6">
+                                <a class="btn center-block btn-lg account rippler rippler-default"
+                                   href="{{ baseUrlAbsolute }}/extra/speedtest">
+                                    <i class="fa fa-tachometer"></i> SPEEDTEST
+                                </a>
+                            </div>
+                            <div class="col-md-3 col-sm-6 col-xs-6">
+                                <a class="btn center-block btn-lg account rippler rippler-default"
+                                   href="{{ baseUrlAbsolute }}/extra/fast">
+                                    <i class="fa fa-tachometer"></i> FAST
+                                </a>
+                            </div>
+                        {% endif %}
+                        <div class="col-md-4 col-sm-12 col-xs-12">
                             <a class="btn center-block btn-lg logoutBtn rippler rippler-default"
                                href="{{ baseUrlAbsolute }}/cache/clearMine">
-                                <i class="fa fa-sign-out" style="padding-top: 0px;"></i> REFRESH CACHE
+                                <i class="fa fa-trash" style="padding-top: 0px;"></i> DELETE CACHE
                             </a>
                         </div>
-                        <div class="col-md-3 col-sm-12 col-xs-12">
+                        <div class="col-md-4 col-sm-12 col-xs-12">
                             <a class="btn center-block btn-lg logoutBtn rippler rippler-default"
                                href="{{ baseUrlAbsolute }}/account/logout">
                                 <i class="fa fa-sign-out" style="padding-top: 0px;"></i> LOG OUT
@@ -110,5 +112,5 @@
 
 
 {% block bg %}
-    <img class="body-bg" src="{{ baseUrlAbsolute }}/img/bg.jpg">
+{#    <img class="body-bg" src="{{ baseUrlAbsolute }}/img/bg.jpg">#}
 {% endblock %}

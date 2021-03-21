@@ -8,14 +8,6 @@
 {% block body %}
     {% include 'Module/search.html.twig' %}
     <style>
-        #header {
-            width: 100%;
-            z-index: 10;
-            position: fixed;
-            background: white;
-            padding: 1em;
-            font-weight: bold;
-        }
         body {
             margin: 0;
         }
@@ -44,10 +36,6 @@
         .flex-images .item img {
             width: 100px;
             height: 160px;
-        }
-
-        #search {
-            margin: 0 5px;
         }
 
         #flex a:focus > .item {
@@ -163,9 +151,14 @@
                     <i class="fa fa-clock-o"></i>
                 </a>
             </div>
-            <a tabindex="4" class="btn" id="search">
-                <i class="fa fa-search"></i>
-            </a>
+            <div class="btn-group" role="group">
+                <a tabindex="4" class="btn" id="search">
+                    <i class="fa fa-search"></i>
+                </a>
+                <a href="{{ baseUrlAbsolute }}/streams/advancedSearch/{{ type }}" tabindex="5" class="btn">
+                    <i class="fa fa-search-plus"></i>
+                </a>
+            </div>
         </div>
     </div>
     <div class="sidenav col-sm-3 col-xs-3 col-md-2">
@@ -224,7 +217,7 @@
                 <input type="submit" class="btn btn-default" value="Ok">
             </form>
         {% else %}
-            {% for stream in streams|slice(start, maxContentPerPage) %}
+            {% for stream in streams %}
                 <a href="{{ baseUrlAbsolute }}/streams/movieInfo/{{ stream.streamid }}"
                    tabindex="1"
                    class="item-link"

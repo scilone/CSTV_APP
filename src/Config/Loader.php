@@ -41,6 +41,13 @@ class Loader
             Service::INFRASTRUCTURE_SUPERGLOBALES,
             Service::APPLICATION_ACCOUNT,
         ],
+        Service::CONTROLLER_IMPORT => [
+            Service::APPLICATION_IPTV,
+            Service::DOMAIN_REPOSITORY_STREAM,
+            Service::DOMAIN_REPOSITORY_PEOPLE,
+            Service::DOMAIN_REPOSITORY_CATEGORY,
+            Service::DOMAIN_REPOSITORY_GENRE,
+        ],
 
         Service::APPLICATION_TWIG => [
             Service::INFRASTRUCTURE_SUPERGLOBALES,
@@ -49,7 +56,9 @@ class Loader
         Service::APPLICATION_IPTV => [
             Service::DOMAIN_IPTV_XCODE_API,
             Service::INFRASTRUCTURE_SUPERGLOBALES,
-            Service::INFRASTRUCTURE_CACHE_ITEM
+            Service::INFRASTRUCTURE_CACHE_ITEM,
+            Service::DOMAIN_REPOSITORY_STREAM,
+            Service::DOMAIN_REPOSITORY_CATEGORY,
         ],
         Service::APPLICATION_ACCOUNT => [
             Service::INFRASTRUCTURE_SODIUM,
@@ -62,8 +71,25 @@ class Loader
             Service::INFRASTRUCTURE_CACHE_RAW
         ],
         Service::DOMAIN_REPOSITORY_ACCOUNT => [
-            Service::INFRASTRUCTURE_MYSQL
+            Service::INFRASTRUCTURE_MYSQL,
         ],
+        Service::DOMAIN_REPOSITORY_STREAM => [
+            Service::INFRASTRUCTURE_MYSQL,
+            Service::INFRASTRUCTURE_CACHE_ITEM
+        ],
+        Service::DOMAIN_REPOSITORY_GENRE => [
+            Service::INFRASTRUCTURE_MYSQL,
+            Service::INFRASTRUCTURE_CACHE_ITEM
+        ],
+        Service::DOMAIN_REPOSITORY_CATEGORY => [
+            Service::INFRASTRUCTURE_MYSQL,
+            Service::INFRASTRUCTURE_CACHE_ITEM
+        ],
+        Service::DOMAIN_REPOSITORY_PEOPLE => [
+            Service::INFRASTRUCTURE_MYSQL,
+            Service::INFRASTRUCTURE_CACHE_ITEM
+        ],
+
 
 
         Service::INFRASTRUCTURE_CACHE_RAW => [

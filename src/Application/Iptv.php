@@ -15,6 +15,7 @@ use App\Domain\Iptv\DTO\SerieSeason;
 use App\Domain\Iptv\DTO\UserInfo;
 use App\Domain\Iptv\DTO\Video;
 use App\Domain\Iptv\XcodeApi;
+use App\Domain\Repository\Stream;
 use App\Infrastructure\CacheItem;
 use App\Infrastructure\SuperglobalesOO;
 use DateTimeImmutable;
@@ -24,7 +25,7 @@ class Iptv
 {
     public const PREFIX = 'IPTV_';
 
-    private const CACHE_EXPIRE = '1 week';
+    private const CACHE_EXPIRE = '1 day';
 
     /**
      * @var XcodeApi
@@ -41,11 +42,27 @@ class Iptv
      */
     private $cache;
 
-    public function __construct(XcodeApi $xcodeApi, SuperglobalesOO $superglobales, CacheItem $cache)
-    {
+    /**
+     * @var Stream
+     */
+    private $stream;
+    /**
+     * @var \App\Domain\Repository\Category
+     */
+    private $category;
+
+    public function __construct(
+        XcodeApi $xcodeApi,
+        SuperglobalesOO $superglobales,
+        CacheItem $cache,
+        Stream $stream,
+        \App\Domain\Repository\Category $category
+    ) {
         $this->xcodeApi      = $xcodeApi;
         $this->superglobales = $superglobales;
         $this->cache         = $cache;
+        $this->stream        = $stream;
+        $this->category      = $category;
     }
 
     private function getFormattedCategories(array $list): array
@@ -56,6 +73,20 @@ class Iptv
                 $data->category_id,
                 $data->category_name,
                 $data->parent_id
+            );
+        }
+
+        return $categories;
+    }
+
+    private function getFormattedCategories2(array $list): array
+    {
+        $categories = [];
+        foreach ($list as $data) {
+            $categories[$data['id']] = new Category(
+                $data['id'],
+                $data['name'],
+                $data['id']
             );
         }
 
@@ -90,7 +121,10 @@ class Iptv
         return $data;
     }
 
-    public function getMovieCategories()
+    /**
+     * @return Category[]
+     */
+    public function getMovieCategoriesFromApi(): array
     {
         $cacheKey = $this->getCachePrefix() . '_getMovieCategories';
         $cachedData = $this->cache->get($cacheKey, self::CACHE_EXPIRE);
@@ -112,7 +146,46 @@ class Iptv
         return $data;
     }
 
+    /**
+     * @return Category[]
+     */
+    public function getMovieCategories(): array
+    {
+        $cacheKey = $this->getCachePrefix() . '_getMovieCategories2';
+        $cachedData = $this->cache->get($cacheKey, self::CACHE_EXPIRE);
+
+        if ($cachedData !== null) {
+            // return $cachedData;
+        }
+
+        $data = $this->getFormattedCategories2(
+            $this->category->getFromType('movie')
+        );
+
+        $this->cache->set($cacheKey, $data);
+
+        return $data;
+    }
+
     public function getSerieCategories()
+    {
+        $cacheKey = $this->getCachePrefix() . '_getSerieCategories2';
+        $cachedData = $this->cache->get($cacheKey, self::CACHE_EXPIRE);
+
+        if ($cachedData !== null) {
+            // return $cachedData;
+        }
+
+        $data = $this->getFormattedCategories2(
+            $this->category->getFromType('serie')
+        );
+
+        $this->cache->set($cacheKey, $data);
+
+        return $data;
+    }
+
+    public function getSerieCategoriesFromApi()
     {
         $cacheKey = $this->getCachePrefix() . '_getSerieCategories';
         $cachedData = $this->cache->get($cacheKey, self::CACHE_EXPIRE);
@@ -334,7 +407,13 @@ class Iptv
         return $return;
     }
 
-    public function getMovieStreams(array $filter, int $sorted = 0): array
+    /**
+     * @param array $filter
+     * @param int   $sorted
+     *
+     * @return Movie[]
+     */
+    public function getMovieStreamsFromApi(array $filter, int $sorted = 0): array
     {
         $cacheKey    = $this->getCachePrefix() . '_getMovieStreams_' . $sorted . '_' . http_build_query($filter);
         $cacheExpire = !isset($filter['cat']) && $sorted === 5 ? '1 day' : self::CACHE_EXPIRE;
@@ -423,7 +502,146 @@ class Iptv
         return $return;
     }
 
-    public function getSerieStreams(array $filter, int $sorted = 0): array
+    /**
+     * @param array $filter
+     * @param int   $sorted
+     *
+     * @return Movie[]
+     */
+    public function getMovieStreams(array $filter, int $sorted = 0, int $offset): array
+    {
+        $cacheKey    = $this->getCachePrefix() . '_getMovieStreams2_' . $sorted . '_' . http_build_query($filter);
+        $cacheExpire = !isset($filter['cat']) && $sorted === 5 ? '1 day' : self::CACHE_EXPIRE;
+        $cachedData  = $this->cache->get($cacheKey, $cacheExpire);
+
+        if ($cachedData !== null) {
+            // return $cachedData;
+        }
+
+        $list = $this->stream->getFromType(
+            'movie',
+            $filter['cat'] ?? null,
+            $sorted,
+            $filter['streams'] ?? null,
+            $filter['search'] ?? null,
+            $filter['advancedSearch'] ?? null,
+            $offset
+        );
+
+        $return = [];
+        foreach ($list as $data) {
+            $name = $data['name'];
+            if (isset($filter['cat'])) {
+                $name = trim(preg_replace('#\|[\w\|]+\|#', '', $name));
+            }
+
+            if (strpos($name, '***') !== false) {
+                continue;
+            }
+
+            $streamLink = $this->superglobales->getSession()->get(self::PREFIX . 'host') .
+                          '/movie' .
+                          '/' . $this->superglobales->getSession()->get(self::PREFIX . 'username') .
+                          '/' . $this->superglobales->getSession()->get(self::PREFIX . 'password') .
+                          '/' . $data['id'] . '.' . $data['extension'];
+
+            $img = $data['img'];
+
+            $return[] = new Movie(
+                (int) $data['id'] ?? 0,
+                (string) $name,
+                (string) 'movie',
+                (int) $data['id'] ?? 0,
+                $img,
+                (float) $data['rating'] ?? 0,
+                (float) isset($data['rating']) ? round($data['rating']/2, 2) : 0,
+                DateTimeImmutable::createFromFormat('U', $data['added'] ?? 0),
+                (int) $data['category_id'] ?? 0,
+                (string) $data['extension'] ?? '',
+                '',
+                '',
+                $streamLink
+            );
+        }
+
+        $this->cache->set($cacheKey, $return);
+
+        return $return;
+    }
+
+    public function getSerieStreams(array $filter, int $sorted = 0, int $offset = 0): array
+    {
+        $cacheKey    = $this->getCachePrefix() . '_getSerieStreams2_' . $sorted . '_' . http_build_query($filter);
+        $cacheExpire = !isset($filter['cat']) && $sorted === 5 ? '1 day' : self::CACHE_EXPIRE;
+        $cachedData  = $this->cache->get($cacheKey, $cacheExpire);
+
+        if ($cachedData !== null) {
+            // return $cachedData;
+        }
+
+        $list = $this->stream->getFromType(
+            'serie',
+            $filter['cat'] ?? null,
+            $sorted,
+            $filter['streams'] ?? null,
+            $filter['search'] ?? null,
+            $filter['advancedSearch'] ?? null,
+            $offset
+
+        );
+
+        $return = [];
+        foreach ($list as $data) {
+            $name = $data['name'];
+            $img  = $data['img'];
+
+            $backdrop = [];
+            if (is_array($data->backdrop_path)) {
+                foreach ($data->backdrop_path as $value) {
+                    $backdrop[] = '/asset/img/' . base64_encode($value);
+                }
+            }
+
+            $dateRelease = $data['releasedate'];
+            if (strpos($dateRelease, '/') !== false) {
+                $tmp         = explode('/', $dateRelease);
+                $dateRelease = "$tmp[2]-$tmp[1]-$tmp[0]";
+            }
+
+            if (strtotime($dateRelease) === false) {
+                $dateRelease = null;
+            }
+
+
+            $return[] = new Serie(
+                (int) $data['id'],
+                (string) $data['name'],
+                (int) $data['id'],
+                $img,
+                (string) $data['resume'],
+                '',
+                '',
+                '',
+                new DateTimeImmutable($dateRelease),
+                DateTimeImmutable::createFromFormat('U', $data['added']),
+                (float) $data['rating'] ?? 0,
+                (float) isset($data['rating']) ? $data['rating']/2 : 0,
+                $backdrop,
+                (string) $data['youtube_trailer'] ?? '',
+                0,
+                (int) $data['category_id'] ?? 0
+            );
+        }
+
+        $this->cache->set($cacheKey, $return);
+
+        return $return;
+    }
+
+    /**
+     * @return Serie[]
+     */
+    public function getSerieStreamsFromApi(array $filter, int $sorted = 0): array
     {
         $cacheKey    = $this->getCachePrefix() . '_getSerieStreams_' . $sorted . '_' . http_build_query($filter);
         $cacheExpire = !isset($filter['cat']) && $sorted === 5 ? '1 day' : self::CACHE_EXPIRE;
@@ -559,7 +777,7 @@ class Iptv
         return $list;
     }
 
-    public function getMovieInfo(int $id)
+    public function getMovieInfo(int $id): ?MovieInfo
     {
         $cacheKey   = $this->getCachePrefix() . '_getMovieInfo_' . $id;
         $cachedData = $this->cache->get($cacheKey);
@@ -574,6 +792,10 @@ class Iptv
             $this->superglobales->getSession()->get(self::PREFIX . 'password'),
             $id
         );
+
+        if (isset($info['info']) === false) {
+            return null;
+        }
 
         $img = '/asset/img/' . base64_encode($info['info']->movie_image ?? '');
 
@@ -621,7 +843,7 @@ class Iptv
         return $data;
     }
 
-    public function getSerieInfo(int $id)
+    public function getSerieInfo(int $id): SerieInfo
     {
         $cacheKey   = $this->getCachePrefix() . '_getSerieInfo_' . $id;
         $cachedData = $this->cache->get($cacheKey, self::CACHE_EXPIRE);
@@ -761,13 +983,13 @@ class Iptv
 
         switch ($type) {
             case 'movie':
-                $streams    = $this->getMovieStreams([]);
+                $streams    = $this->getMovieStreamsFromApi([]);
                 break;
             case 'live':
                 $streams    = $this->getLiveStreams([]);
                 break;
             default:
-                $streams    = $this->getSerieStreams([]);
+                $streams    = $this->getSerieStreamsFromApi([]);
         }
 
         $categoriesNb = [];
@@ -776,6 +998,29 @@ class Iptv
         }
 
         $categoriesNb['all'] = count($streams);
+
+        $this->cache->set($cacheKey, $categoriesNb);
+
+        return $categoriesNb;
+    }
+
+    public function getNbStreamByCat2(string $type): array
+    {
+        $cacheKey   = $this->getCachePrefix() . '_getNbStreamByCat2_' . $type;
+        $cachedData = $this->cache->get($cacheKey, self::CACHE_EXPIRE);
+
+        if ($cachedData !== null) {
+            return $cachedData;
+        }
+
+        $streams = $this->stream->countByCategoryAndType($type);
+
+        $categoriesNb = [];
+        foreach ($streams as $stream) {
+            $categoriesNb[$stream['category_id']] = $stream['nb'];
+        }
+
+        $categoriesNb['all'] = array_sum($categoriesNb);
 
         $this->cache->set($cacheKey, $categoriesNb);
 

@@ -89,11 +89,11 @@
                             </a>
                             {% endif %}
                         {% endif %}
-{#                        {% if not isTv %}#}
+                        {% if not isTv %}
                         <a href="{{ movie.streamLink }}" class="btn btn-primary">
                             Download
                         </a>
-{#                        {% endif %}#}
+                        {% endif %}
                         {% if isFavorite %}
                         <a href="{{ baseUrlAbsolute }}/account/removefavorite/movie/{{ movie.streamId }}" class="btn btn-warning">
                             <i class=" fa fa-minus"></i> Favorite

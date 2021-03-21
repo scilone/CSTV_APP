@@ -1,4 +1,4 @@
-{% for stream in streams|slice(start, maxContentPerPage) %}
+{% for stream in streams %}
     <a href="{{ baseUrlAbsolute }}/streams/serieInfo/{{ stream.serieId }}"
        tabindex="1"
        class="item-link"

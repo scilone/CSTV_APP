@@ -95,7 +95,7 @@ class CategoryController extends SecurityController
             return;
         }
 
-        $categories = $this->iptv->getMovieCategories();
+        $categories = $this->iptv->getMovieCategoriesFromApi();
 
         $render = $this->twig->render(
             'category.html.twig',
@@ -121,7 +121,7 @@ class CategoryController extends SecurityController
             return;
         }
 
-        $categories = $this->iptv->getSerieCategories();
+        $categories = $this->iptv->getSerieCategoriesFromApi();
 
         $render = $this->twig->render(
             'category.html.twig',

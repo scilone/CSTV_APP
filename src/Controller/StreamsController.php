@@ -293,6 +293,105 @@ class StreamsController extends SecurityController
         return $str;
     }
 
+    // public function movie(string $category, int $sort = 0, string $search = ''): void
+    // {
+    //     $search = urldecode($search);
+    //
+    //     $filter = [];
+    //     if (is_numeric($category)) {
+    //         $filter['cat'] = $category;
+    //     }
+    //
+    //     $streams    = $this->iptv->getMovieStreams($filter, $sort);
+    //     $categories = $this->iptv->getMovieCategories();
+    //
+    //     $nbStreamsByCat = $this->iptv->getNbStreamByCat('movie');
+    //     $nbStreamsByCat += ['favorites' => count($this->superglobales->getSession()->get('favorites')['movie'] ?? [])];
+    //
+    //     $catName = isset($categories[$category]) ? $categories[$category]->getName() : '';
+    //
+    //     $contentAlloweded = true;
+    //     if (mb_stripos($catName, 'adult') || mb_stripos($catName, '18')) {
+    //         $contentAlloweded = false;
+    //
+    //         if (md5($this->superglobales->getPost()->get('pass')) === $this->superglobales->getSession()->get('SKey'))
+    //         {
+    //             $contentAlloweded = true;
+    //         }
+    //     }
+    //
+    //     $hiddenCategories = [];
+    //     $hiddenStreams    = 0;
+    //     if (isset($this->superglobales->getSession()->get('hiddenCategories')['movie'])) {
+    //         foreach ($categories as $keyCat => $cat) {
+    //             if (isset($this->superglobales->getSession()->get('hiddenCategories')['movie'][$cat->getId()])) {
+    //                 $hiddenStreams += $nbStreamsByCat[$cat->getId()];
+    //                 $hiddenCategories[] = $cat;
+    //                 unset($categories[$keyCat]);
+    //             }
+    //         }
+    //     }
+    //
+    //     $nbStreamsByCat += ['hidden' => $hiddenStreams];
+    //
+    //     if ($category === 'favorites') {
+    //         $favorites = $this->superglobales->getSession()->get('favorites')['movie'];
+    //         $streams = array_filter($streams, function ($var) use ($favorites) {
+    //             return isset($favorites[$var->getStreamId()]);
+    //         });
+    //     }
+    //
+    //     if ($search !== '') {
+    //         $searchCleaned = $this->cleanSearch($search);
+    //         $streams = array_filter($streams, function ($var) use ($searchCleaned) {
+    //             if (stripos($var->getName(), '♀') !== false) {
+    //                 return false;
+    //             }
+    //
+    //             if (stripos($var->getName(), 'xxx') !== false) {
+    //                 return false;
+    //             }
+    //
+    //             return stripos($this->cleanSearch($var->getName()), $searchCleaned) !== false;
+    //         });
+    //     }
+    //
+    //     if ($category === 'all') {
+    //         $streams = array_filter($streams, function ($var) use ($searchCleaned) {
+    //             if (stripos($var->getName(), '♀') !== false) {
+    //                 return false;
+    //             }
+    //
+    //             if (stripos($var->getName(), 'gims') !== false) {
+    //                 return false;
+    //             }
+    //
+    //             return true;
+    //         });
+    //     }
+    //
+    //     $render = $this->twig->render(
+    //         ($this->isAjax ? 'ajax/' : '') . 'streamsMovie.html.twig',
+    //         [
+    //             'start'            => $this->superglobales->getQuery()->get('start', 0),
+    //             'streams'          => $streams,
+    //             'type'             => 'movie',
+    //             'sort'             => $sort,
+    //             'search'           => $search,
+    //             'currentCat'       => $category,
+    //             'categories'       => $categories,
+    //             'hiddenCategories' => $hiddenCategories,
+    //             'catName'          => $catName,
+    //             'isHidden'         => isset($categories[$category]) ? false : true,
+    //             'contentAlloweded' => $contentAlloweded,
+    //             'nbStreamsByCat'   => $nbStreamsByCat,
+    //             'streamView'       => $this->superglobales->getSession()->get('flaggedStreams')['movie']
+    //         ]
+    //     );
+    //
+    //     echo $render;
+    // }
+
     public function movie(string $category, int $sort = 0, string $search = ''): void
     {
         $search = urldecode($search);
@@ -302,10 +401,23 @@ class StreamsController extends SecurityController
             $filter['cat'] = $category;
         }
 
-        $streams    = $this->iptv->getMovieStreams($filter, $sort);
+        if ($category === 'favorites') {
+            $favorites = array_keys($this->superglobales->getSession()->get('favorites')['movie']);
+            $filter['streams'] = $favorites;
+        }
+
+        if ($search !== '') {
+            $filter['search'] = $search;
+        }
+
+        if ($this->superglobales->getQuery()->has('advancedSearch')) {
+            $filter['advancedSearch'] = $this->superglobales->getQuery()->get('advancedSearch');
+        }
+
+        $streams    = $this->iptv->getMovieStreams($filter, $sort, $this->superglobales->getQuery()->get('start', 0));
         $categories = $this->iptv->getMovieCategories();
 
-        $nbStreamsByCat = $this->iptv->getNbStreamByCat('movie');
+        $nbStreamsByCat = $this->iptv->getNbStreamByCat2('movie');
         $nbStreamsByCat += ['favorites' => count($this->superglobales->getSession()->get('favorites')['movie'] ?? [])];
 
         $catName = isset($categories[$category]) ? $categories[$category]->getName() : '';
@@ -314,7 +426,8 @@ class StreamsController extends SecurityController
         if (mb_stripos($catName, 'adult') || mb_stripos($catName, '18')) {
             $contentAlloweded = false;
 
-            if (md5($this->superglobales->getPost()->get('pass')) === $this->superglobales->getSession()->get('SKey')) {
+            if (md5($this->superglobales->getPost()->get('pass')) === $this->superglobales->getSession()->get('SKey'))
+            {
                 $contentAlloweded = true;
             }
         }
@@ -332,42 +445,6 @@ class StreamsController extends SecurityController
         }
 
         $nbStreamsByCat += ['hidden' => $hiddenStreams];
-
-        if ($category === 'favorites') {
-            $favorites = $this->superglobales->getSession()->get('favorites')['movie'];
-            $streams = array_filter($streams, function ($var) use ($favorites) {
-                return isset($favorites[$var->getStreamId()]);
-            });
-        }
-
-        if ($search !== '') {
-            $searchCleaned = $this->cleanSearch($search);
-            $streams = array_filter($streams, function ($var) use ($searchCleaned) {
-                if (stripos($var->getName(), '♀') !== false) {
-                    return false;
-                }
-
-                if (stripos($var->getName(), 'xxx') !== false) {
-                    return false;
-                }
-
-                return stripos($this->cleanSearch($var->getName()), $searchCleaned) !== false;
-            });
-        }
-
-        if ($category === 'all') {
-            $streams = array_filter($streams, function ($var) use ($searchCleaned) {
-                if (stripos($var->getName(), '♀') !== false) {
-                    return false;
-                }
-
-                if (stripos($var->getName(), 'gims') !== false) {
-                    return false;
-                }
-
-                return true;
-            });
-        }
 
         $render = $this->twig->render(
             ($this->isAjax ? 'ajax/' : '') . 'streamsMovie.html.twig',
@@ -389,6 +466,75 @@ class StreamsController extends SecurityController
         );
 
         echo $render;
+    }
+
+    public function serie(string $category, int $sort = 0, string $search = ''): void
+    {
+        $search = urldecode($search);
+
+        $filter = [];
+        if (is_numeric($category)) {
+            $filter['cat'] = $category;
+        }
+
+        if ($category === 'favorites') {
+            $favorites = array_keys($this->superglobales->getSession()->get('favorites')['serie']);
+            $filter['streams'] = $favorites;
+        }
+
+        if ($search !== '') {
+            $filter['search'] = $search;
+        }
+
+        if ($this->superglobales->getQuery()->has('advancedSearch')) {
+            $filter['advancedSearch'] = $this->superglobales->getQuery()->get('advancedSearch');
+        }
+
+        $streams        = $this->iptv->getSerieStreams($filter, $sort, $this->superglobales->getQuery()->get('start', 0));
+        $categories     = $this->iptv->getSerieCategories();
+
+        $nbStreamsByCat = $this->iptv->getNbStreamByCat('serie');
+        $nbStreamsByCat += ['favorites' => count($this->superglobales->getSession()->get('favorites')['serie'] ?? [])];
+
+        $catName = isset($categories[$category]) ? $categories[$category]->getName() : '';
+
+        $hiddenStreams = 0;
+        $hiddenCategories = [];
+        if (isset($this->superglobales->getSession()->get('hiddenCategories')['serie'])) {
+            foreach ($categories as $keyCat => $cat) {
+                if (isset($this->superglobales->getSession()->get('hiddenCategories')['serie'][$cat->getId()])) {
+                    $hiddenStreams += $nbStreamsByCat[$cat->getId()];
+                    $hiddenCategories[] = $cat;
+                    unset($categories[$keyCat]);
+                }
+            }
+        }
+
+        $nbStreamsByCat += ['hidden' => $hiddenStreams];
+
+        $render = $this->twig->render(
+            ($this->isAjax ? 'ajax/' : '') . 'streamsSerie.html.twig',
+            [
+                'start'            => $this->superglobales->getQuery()->get('start', 0),
+                'streams'          => $streams,
+                'type'             => 'serie',
+                'sort'             => $sort,
+                'search'           => $search,
+                'currentCat'       => $category,
+                'categories'       => $categories,
+                'hiddenCategories' => $hiddenCategories,
+                'catName'          => $catName,
+                'nbStreamsByCat'   => $nbStreamsByCat,
+                'isHidden'         => isset($categories[$category]) ? false : true,
+            ]
+        );
+
+        echo $render;
+    }
+
+    public function advancedSearch(string $type)
+    {
+        echo $this->twig->render('advancedSearch.html.twig', ['type' => $type]);
     }
 
     private function stripQuality(string $string): string
@@ -428,70 +574,70 @@ class StreamsController extends SecurityController
         );
     }
 
-    public function serie(string $category, int $sort = 0, string $search = ''): void
-    {
-        $search = urldecode($search);
-
-        $filter = [];
-        if (is_numeric($category)) {
-            $filter['cat'] = $category;
-        }
-
-        $streams        = $this->iptv->getSerieStreams($filter, $sort);
-        $categories     = $this->iptv->getSerieCategories();
-
-        $nbStreamsByCat = $this->iptv->getNbStreamByCat('serie');
-        $nbStreamsByCat += ['favorites' => count($this->superglobales->getSession()->get('favorites')['serie'] ?? [])];
-
-        $catName = isset($categories[$category]) ? $categories[$category]->getName() : '';
-
-        $hiddenStreams = 0;
-        $hiddenCategories = [];
-        if (isset($this->superglobales->getSession()->get('hiddenCategories')['serie'])) {
-            foreach ($categories as $keyCat => $cat) {
-                if (isset($this->superglobales->getSession()->get('hiddenCategories')['serie'][$cat->getId()])) {
-                    $hiddenStreams += $nbStreamsByCat[$cat->getId()];
-                    $hiddenCategories[] = $cat;
-                    unset($categories[$keyCat]);
-                }
-            }
-        }
-
-        $nbStreamsByCat += ['hidden' => $hiddenStreams];
-
-        if ($category === 'favorites') {
-            $favorites = $this->superglobales->getSession()->get('favorites')['serie'];
-            $streams = array_filter($streams, function ($var) use ($favorites) {
-                return isset($favorites[$var->getSerieId()]);
-            });
-        }
-
-        if ($search !== '') {
-            $searchCleaned = $this->cleanSearch($search);
-            $streams = array_filter($streams, function ($var) use ($searchCleaned) {
-                return stripos($this->cleanSearch($var->getName()), $searchCleaned) !== false;
-            });
-        }
-
-        $render = $this->twig->render(
-            ($this->isAjax ? 'ajax/' : '') . 'streamsSerie.html.twig',
-            [
-                'start'            => $this->superglobales->getQuery()->get('start', 0),
-                'streams'          => $streams,
-                'type'             => 'serie',
-                'sort'             => $sort,
-                'search'           => $search,
-                'currentCat'       => $category,
-                'categories'       => $categories,
-                'hiddenCategories' => $hiddenCategories,
-                'catName'          => $catName,
-                'nbStreamsByCat'   => $nbStreamsByCat,
-                'isHidden'         => isset($categories[$category]) ? false : true,
-            ]
-        );
-
-        echo $render;
-    }
+    // public function serie(string $category, int $sort = 0, string $search = ''): void
+    // {
+    //     $search = urldecode($search);
+    //
+    //     $filter = [];
+    //     if (is_numeric($category)) {
+    //         $filter['cat'] = $category;
+    //     }
+    //
+    //     $streams        = $this->iptv->getSerieStreamsFromApi($filter, $sort);
+    //     $categories     = $this->iptv->getSerieCategoriesFromApi();
+    //
+    //     $nbStreamsByCat = $this->iptv->getNbStreamByCat('serie');
+    //     $nbStreamsByCat += ['favorites' => count($this->superglobales->getSession()->get('favorites')['serie'] ?? [])];
+    //
+    //     $catName = isset($categories[$category]) ? $categories[$category]->getName() : '';
+    //
+    //     $hiddenStreams = 0;
+    //     $hiddenCategories = [];
+    //     if (isset($this->superglobales->getSession()->get('hiddenCategories')['serie'])) {
+    //         foreach ($categories as $keyCat => $cat) {
+    //             if (isset($this->superglobales->getSession()->get('hiddenCategories')['serie'][$cat->getId()])) {
+    //                 $hiddenStreams += $nbStreamsByCat[$cat->getId()];
+    //                 $hiddenCategories[] = $cat;
+    //                 unset($categories[$keyCat]);
+    //             }
+    //         }
+    //     }
+    //
+    //     $nbStreamsByCat += ['hidden' => $hiddenStreams];
+    //
+    //     if ($category === 'favorites') {
+    //         $favorites = $this->superglobales->getSession()->get('favorites')['serie'];
+    //         $streams = array_filter($streams, function ($var) use ($favorites) {
+    //             return isset($favorites[$var->getSerieId()]);
+    //         });
+    //     }
+    //
+    //     if ($search !== '') {
+    //         $searchCleaned = $this->cleanSearch($search);
+    //         $streams = array_filter($streams, function ($var) use ($searchCleaned) {
+    //             return stripos($this->cleanSearch($var->getName()), $searchCleaned) !== false;
+    //         });
+    //     }
+    //
+    //     $render = $this->twig->render(
+    //         ($this->isAjax ? 'ajax/' : '') . 'streamsSerie.html.twig',
+    //         [
+    //             'start'            => $this->superglobales->getQuery()->get('start', 0),
+    //             'streams'          => $streams,
+    //             'type'             => 'serie',
+    //             'sort'             => $sort,
+    //             'search'           => $search,
+    //             'currentCat'       => $category,
+    //             'categories'       => $categories,
+    //             'hiddenCategories' => $hiddenCategories,
+    //             'catName'          => $catName,
+    //             'nbStreamsByCat'   => $nbStreamsByCat,
+    //             'isHidden'         => isset($categories[$category]) ? false : true,
+    //         ]
+    //     );
+    //
+    //     echo $render;
+    // }
 
     public function flagAsView(string $type, int $id, string $url)
     {

@@ -23,7 +23,7 @@ class SecurityController
         }
 
         if ($this->superglobales->getSession()->has('sessionCreated')
-            && $this->superglobales->getSession()->get('sessionCreated') + (3600 * 2) < time()
+            && $this->superglobales->getSession()->get('sessionCreated') + (3600 * 1) < time()
         ) {
             $this->setCookieRedirect();
 

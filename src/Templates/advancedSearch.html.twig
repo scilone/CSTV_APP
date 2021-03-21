@@ -1,0 +1,61 @@
+{% extends "base.html.twig" %}
+
+{% block body %}
+<div class="container" style="margin: 3em; width: auto">
+    <div class="row">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <form action="{{ baseUrlAbsolute }}/streams/{{ type }}/all/0/" method="get">
+                <div class="form-group">
+                    <label for="title">Title</label>
+                    <input type="text" class="form-control" id="title" name="advancedSearch[title]">
+                </div>
+                <div class="form-group">
+                    <label for="director">Director</label>
+                    <input type="text" class="form-control" id="director" name="advancedSearch[director]">
+                </div>
+                <div class="form-group">
+                    <label for="actor">Actor</label>
+                    <input type="text" class="form-control" id="actor" name="advancedSearch[actor]">
+                </div>
+                <div class="form-group">
+                    <label for="genre">Genre</label>
+                    <input type="text" class="form-control" id="genre" name="advancedSearch[genre]">
+                </div>
+                <div class="form-group">
+                    <label for="releasedate">Release Year</label>
+                    <div class="form-inline">
+                        <select class="form-control" name="advancedSearch[releasedateType]">
+                            <option value=">" selected>></option>
+                            <option value="<"><</option>
+                            <option value="=">=</option>
+                        </select>
+                        <input type="number" min="1900" max="{{ "now"|date('Y') }}" class="form-control" id="releasedate" name="advancedSearch[releasedate]">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="rate">Rating</label>
+                    <select class="form-control" id="rate" name="advancedSearch[rate]">
+                        <option value="" disabled selected>Min</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                        <option value="7">7</option>
+                        <option value="8">8</option>
+                        <option value="9">9</option>
+                        <option value="10">10</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn btn-default">Submit</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block bg %}
+{#    <img class="body-bg" src="{{ baseUrlAbsolute }}/img/bg.jpg">#}
+{% endblock %}

@@ -26,11 +26,42 @@
     </head>
     <body>
         <style>
+            #header {
+                background: rgb(24, 26, 27);
+                width: 100%;
+                z-index: 10;
+                position: fixed;
+                padding: 1em;
+                font-weight: bold;
+            }
+
+            #header a.btn {
+                background-color: rgb(49, 53, 55);
+            }
+            .btn {
+                border-color: transparent;
+            }
+            a {
+                color: rgb(195, 190, 182);
+            }
+            ::-webkit-scrollbar {
+                background-color: #202324;
+                color: #aba499;
+            }
+            ::-webkit-scrollbar-corner {
+                background-color: #181a1b;
+            }
+            ::-webkit-scrollbar-thumb {
+                background-color: #454a4d;
+            }
+            ::selection {
+                background-color: #004daa !important;
+                color: #e8e6e3 !important;
+            }
+
             {% if isTv %}
             a.btn-danger, a.btn-default, a.btn-primary, a.btn-warning, a.btn-success, a.btn-info {
-                color: #333;
-                background-color: #fff;
-                border-color: #ccc;
+                background-color: rgb(49, 53, 55);
             }
 
             .form-control:focus {
