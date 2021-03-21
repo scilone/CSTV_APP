@@ -6,42 +6,6 @@
             background: rgba(0,0,0,0.8);
         }
 
-        p {
-            margin: 5px 0em !important;
-        }
-
-        /* STARS */
-        .star.star-1:after {
-            width: 3px;
-        }
-        .star.star-2:after {
-            width: 4px;
-        }
-        .star.star-3:after {
-            width: 5px;
-        }
-        .star.star-4:after {
-            width: 6px;
-        }
-        .star.star-5:after {
-            width: 7px;
-        }
-        .star.star-6:after {
-            width: 8px;
-        }
-        .star.star-7:after {
-            width: 9px;
-        }
-        .star.star-8:after {
-            width: 10px;
-        }
-        .star.star-9:after {
-            width: 11px;
-        }
-        .stars {
-            text-align: center;
-        }
-
         td:nth-child(odd) {
             width: 30%;
             height: 3em;
@@ -63,9 +27,9 @@
                 <h1 style="text-align: center;">{{ serie.name }}</h1>
             </div>
             <div>
-                <div class="sidenav col-md-3 col-sm-3 col-xs-8 col-xs-offset-2 col-sm-offset-0" style="margin-bottom: 2em;">
+                <div class="col-md-3 col-sm-3 col-xs-8 col-xs-offset-2 col-sm-offset-0">
                     <img src="{{ baseUrlAbsolute ~ serie.cover }}" class="col-md-12 col-sm-12 col-xs-12" >
-                    <div class="col-md-12 col-sm-12 col-xs-12">
+                    <div class="col-md-12 col-sm-12 col-xs-12" style="text-align: center;">
                         {% include 'Module/stars.html.twig' with {'rating': serie.rating5based} %}
                     </div>
                     {% if serie.youtubeTrailer is not empty  %}
@@ -232,7 +196,7 @@
 {% endblock %}
 
 {% block bg %}
-    {% if serie.backdropPath[0] is not empty %}
+    {% if serie.backdropPath[0] is not empty and serie.backdropPath[0] != '/asset/img/' %}
         <img class="body-bg" src="{{ baseUrlAbsolute ~ random(serie.backdropPath) }}">
     {% endif %}
 {% endblock %}
