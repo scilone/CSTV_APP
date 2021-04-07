@@ -60,17 +60,16 @@
                                     Webplayer {{ quality }}
                                 </a>
                             {% endfor %}
+                            <hr>
                         {% endif %}
-                        <hr>
                         {% if not isTv %}
                             {% for quality,link in links %}
                                 <a href="{{ link.stream }}" class="btn btn-primary" download>
                                     Download {{ quality }}
                                 </a>
                             {% endfor %}
-
+                            <hr>
                         {% endif %}
-                        <hr>
                         {% if isFavorite %}
                         <a href="{{ baseUrlAbsolute }}/account/removefavorite/movie/{{ movie.streamId }}" class="btn btn-warning">
                             <i class=" fa fa-minus"></i> Favorite

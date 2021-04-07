@@ -19,11 +19,6 @@
             height: 100px !important;
         }
 
-        #flex a:focus > .item {
-            border: 3px solid #e8b12c;
-            width: 96px;
-            height: 96px;
-        }
 
     </style>
 
@@ -116,8 +111,9 @@
                    data-name="{{ stream.name|lower }}"
                    data-added="{{ stream.added.timestamp }}"
                    data-rate="{{ stream.rating5based }}">
-                    <div class="item" style="{% if streamView[stream.streamId] is defined %}opacity: 0.3{% endif %}">
+                    <div class="item">
                         <img {# if loop.index > 50 %}data-{% endif #}src="{{ baseUrlAbsolute ~ stream.streamIcon }}"
+                             style="{% if streamView[stream.streamId] is defined %}opacity: 0.2{% endif %}"
                              alt="{{ stream.name }}"
                              title="{{ stream.name }}">
                         <div class="over">
