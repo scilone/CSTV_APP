@@ -32,6 +32,12 @@
                     <div class="col-md-12 col-sm-12 col-xs-12" style="text-align: center;">
                         {% include 'Module/stars.html.twig' with {'rating': serie.rating5based} %}
                     </div>
+                    {% for alternateName,alternateUrl in alternates %}
+                        <a href="{{ alternateUrl }}" tabindex="1" class="btn btn-success">
+                            Alternate {{ alternateName }}
+                        </a>
+                    {% endfor %}
+                    <hr>
                     {% if serie.youtubeTrailer is not empty  %}
                         {% if isAndroid or isIos %}
                             <a href="{{ youtubeDeeplink }}{{ serie.youtubeTrailer }}" tabindex="1" class="btn btn-danger">
@@ -142,11 +148,11 @@
                                         </a>
                                         {% endif %}
                                     </div>
-                                    <!--div class="col-md-12 col-sm-12 col-xs-12">
+                                    <div class="col-md-12 col-sm-12 col-xs-12">
                                         <p>
                                             {{ episode.plot }}
                                         </p>
-                                    </div-->
+                                    </div>
                                 </div>
                             {% endfor %}
                             </div>

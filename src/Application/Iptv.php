@@ -2,6 +2,7 @@
 
 namespace App\Application;
 
+use App\Config\Param;
 use App\Domain\Iptv\DTO\Category;
 use App\Domain\Iptv\DTO\EpgShort;
 use App\Domain\Iptv\DTO\Live;
@@ -775,6 +776,73 @@ class Iptv
         }
 
         return $list;
+    }
+
+    public function getMovieLinks(int $id): array
+    {
+        $cacheKey   = $this->getCachePrefix() . '_getMovieLinks_' . $id;
+        $cachedData = $this->cache->get($cacheKey);
+
+        if ($cachedData !== null) {
+            return $cachedData;
+        }
+
+        $streamsRaw = $this->stream->getAlternatesByType('movie', $id);
+
+        $links = [];
+        foreach ($streamsRaw as $streamRaw) {
+            $nameFormatted = $this->extractInfoFromStreamTitle($streamRaw['name']);
+            $links[$nameFormatted]['stream'] = $this->superglobales
+                ->getSession()
+                ->get(self::PREFIX . 'host') .
+                                     '/movie' .
+                                     '/' . $this->superglobales->getSession()->get(self::PREFIX . 'username') .
+                                     '/' . $this->superglobales->getSession()->get(self::PREFIX . 'password') .
+                                     '/' . $streamRaw['streamId'] . '.' . $streamRaw['extension'];
+            $links[$nameFormatted]['id'] = $streamRaw['streamId'];
+        }
+
+        $this->cache->set($cacheKey, $links);
+
+        return $links;
+    }
+
+    public function getSerieAlternate(int $id): array
+    {
+        $cacheKey   = $this->getCachePrefix() . '_getSerieAlternate_' . $id;
+        $cachedData = $this->cache->get($cacheKey);
+
+        if ($cachedData !== null) {
+            return $cachedData;
+        }
+
+        $streamsRaw = $this->stream->getAlternatesByType('serie', $id);
+
+        $links = [];
+        foreach ($streamsRaw as $streamRaw) {
+            if ($streamRaw['streamId'] == $id) {
+                continue;
+            }
+
+            $links[$this->extractInfoFromStreamTitle($streamRaw['name'])] =
+                Param::BASE_URL_ABSOLUTE . '/streams/serieInfo/' . $streamRaw['streamId'];
+        }
+
+        $this->cache->set($cacheKey, $links);
+
+        return $links;
+    }
+
+    private function extractInfoFromStreamTitle(string $title)
+    {
+        $m = [];
+        preg_match('#(\|.*\|)#', $title, $m);
+
+        if (empty($m[0])) {
+            return '';
+        }
+
+        return current($m);
     }
 
     public function getMovieInfo(int $id): ?MovieInfo

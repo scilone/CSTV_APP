@@ -61,21 +61,32 @@ class ImportController
 
     public function movie()
     {
+        var_dump('Start import movie');
+
         $movies     = $this->iptv->getMovieStreamsFromApi([]);
         $categories = $this->iptv->getMovieCategoriesFromApi();
 
+        var_dump(count($movies));
+
         foreach ($movies as $movie) {
             if ($this->stream->getFromIdAndType($movie->getStreamId(), 'movie') !== []) {
+                var_dump('Stream passed: ' . $movie->getStreamId());
                 continue;
             }
+
+            var_dump('Stream get info: ' . $movie->getStreamId());
 
             try {
                 $movieInfo = $this->iptv->getMovieInfo($movie->getStreamId());
             } catch (Exception $e) {
+                var_dump('Stream not enable to get info: ' . $movie->getStreamId());
+
                 continue;
             }
 
             if ($movieInfo instanceof MovieInfo === false || $movieInfo->getStreamId() === 0) {
+                var_dump('Stream not valid info: ' . $movie->getStreamId());
+
                 continue;
             }
 

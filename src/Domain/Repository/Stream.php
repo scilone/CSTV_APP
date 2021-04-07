@@ -222,4 +222,59 @@ class Stream
 
         return $result;
     }
+
+    public function getAlternatesByType(string $type, int $id): array
+    {
+        $result =  $this->connection->get()->query(
+            "SELECT  s.name, s.releasedate, s.extension, s.id AS streamId, p.id, REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(s.name, 'BR|', ''), '3D|', ''), 'VO|', ''), '4K|', ''), 'STAR|', ''), 'STEN|', ''), 'IT|', ''), 'PT|', ''), 'TR|', ''), 'VOSTFR|', ''), 'ES|', ''), 'ST|', ''), 'STFR|', ''), 'AR|', ''), 'DE|', ''), 'â™€|', ''), 'EN|', ''), 'FR|', ''), 'NL|', ''), '4K-DV|', ''), '|Â', ''), '| ', ''), '|', '') AS nameFormat  
+FROM app_streams s
+JOIN app_streams_people sp ON sp.stream_id = s.id
+JOIN app_people p ON p.id = sp.people_id
+WHERE releasedate IN (
+ 	SELECT releasedate  
+    FROM app_streams
+	WHERE id = $id
+)
+AND s.type = \"$type\"
+GROUP BY s.id
+HAVING (
+    p.id IN (
+        SELECT sp.people_id  
+        FROM app_streams s
+        JOIN app_streams_people sp ON sp.stream_id = s.id
+        JOIN app_people p ON p.id = sp.people_id AND role = 'director'
+        WHERE s.id = $id
+        AND p.name != ''
+	) 
+    OR
+    nameFormat = (
+    	SELECT REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(name, 'BR|', ''), '3D|', ''), 'VO|', ''), '4K|', ''), 'STAR|', ''), 'STEN|', ''), 'IT|', ''), 'PT|', ''), 'TR|', ''), 'VOSTFR|', ''), 'ES|', ''), 'ST|', ''), 'STFR|', ''), 'AR|', ''), 'DE|', ''), 'â™€|', ''), 'EN|', ''), 'FR|', ''), 'NL|', ''), '4K-DV|', ''), '|Â', ''), '| ', ''), '|', '') AS nameFormat
+        FROM app_streams
+        WHERE id = $id
+        AND name != ''
+    )
+	OR
+	p.id IN (
+        SELECT sp.people_id  
+        FROM app_streams s
+        JOIN app_streams_people sp ON sp.stream_id = s.id
+        JOIN app_people p ON p.id = sp.people_id AND role = 'actor'
+        WHERE s.id = $id
+        AND p.name != ''
+	) 
+)"
+        );
+
+        if ($result === false) {
+            return [];
+        }
+
+        $result = $result->fetch_all(MYSQLI_ASSOC);
+
+        if ($result === null) {
+            return [];
+        }
+
+        return $result;
+    }
 }

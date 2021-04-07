@@ -199,7 +199,7 @@ class StreamsController extends SecurityController
         $catName = isset($categories[$category]) ? $categories[$category]->getName() : '';
 
         $contentAlloweded = true;
-        if (mb_stripos($catName, 'adult') || mb_stripos($catName, '18')) {
+        if (mb_stripos($catName, 'adult') || mb_stripos($catName, '18') || mb_stripos($catName, '♀')) {
             $contentAlloweded = false;
 
             if (md5($this->superglobales->getPost()->get('pass')) === $this->superglobales->getSession()->get('SKey')) {
@@ -311,7 +311,7 @@ class StreamsController extends SecurityController
     //     $catName = isset($categories[$category]) ? $categories[$category]->getName() : '';
     //
     //     $contentAlloweded = true;
-    //     if (mb_stripos($catName, 'adult') || mb_stripos($catName, '18')) {
+    //     if (mb_stripos($catName, 'adult') || mb_stripos($catName, '18') || mb_stripos($catName, '♀')) {
     //         $contentAlloweded = false;
     //
     //         if (md5($this->superglobales->getPost()->get('pass')) === $this->superglobales->getSession()->get('SKey'))
@@ -423,7 +423,7 @@ class StreamsController extends SecurityController
         $catName = isset($categories[$category]) ? $categories[$category]->getName() : '';
 
         $contentAlloweded = true;
-        if (mb_stripos($catName, 'adult') || mb_stripos($catName, '18')) {
+        if (mb_stripos($catName, 'adult') || mb_stripos($catName, '18') || mb_stripos($catName, '♀')) {
             $contentAlloweded = false;
 
             if (md5($this->superglobales->getPost()->get('pass')) === $this->superglobales->getSession()->get('SKey'))
@@ -549,11 +549,13 @@ class StreamsController extends SecurityController
     public function movieInfo(string $id): void
     {
         $movie = $this->iptv->getMovieInfo($id);
+        $links = $this->iptv->getMovieLinks($id);
 
         echo $this->twig->render(
             'streamsMovieInfo.html.twig',
             [
                 'movie'      => $movie,
+                'links'      => $links,
                 'streamView' => $this->superglobales->getSession()->get('flaggedStreams')['movie'],
                 'isFavorite' => isset($this->superglobales->getSession()->get('favorites')['movie'][$id])
             ]
@@ -562,12 +564,14 @@ class StreamsController extends SecurityController
 
     public function serieInfo(string $id): void
     {
-        $serie = $this->iptv->getSerieInfo($id);
+        $serie     = $this->iptv->getSerieInfo($id);
+        $alternates = $this->iptv->getSerieAlternate($id);
 
         echo $this->twig->render(
             'streamsSerieInfo.html.twig',
             [
                 'serie'      => $serie,
+                'alternates' => $alternates,
                 'streamView' => $this->superglobales->getSession()->get('flaggedStreams')['serie'],
                 'isFavorite' => isset($this->superglobales->getSession()->get('favorites')['serie'][$id])
             ]

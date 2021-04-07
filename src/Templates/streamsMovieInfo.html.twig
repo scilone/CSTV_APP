@@ -36,32 +36,41 @@
                         {% set rating5 = (movie.rating/2)|round(1)  %}
                         {% include 'Module/stars.html.twig' with {'rating': rating5} %}
 
-                        {% if isAndroid or isIos %}
-                        <a href="{{ baseUrlAbsolute }}/streams/flagAsView/movie/{{ movie.streamId }}/{{ (vlcDeeplink ~ movie.streamLink)|base64Encode }}" tabindex="1" class="btn btn-success">
-                            Play
-                        </a>
-                        {% endif %}
-                        {% if not isIos and not isAndroid and isChrome  %}
-                        <a href="{{ baseUrlAbsolute }}/streams/flagAsView/movie/{{ movie.streamId }}/{{ (baseUrlAbsolute ~ "/streams/play/movie/" ~ movie.streamId)|base64Encode }}" tabindex="1" class="btn btn-success">
-                            Webplayer
-                        </a>
-                        {% endif %}
                         {% if movie.youtubeTrailer is not empty  %}
                             {% if isAndroid or isIos %}
-                            <a href="{{ youtubeDeeplink }}{{ movie.youtubeTrailer }}" tabindex="1" class="btn btn-danger">
-                                Trailer
-                            </a>
+                                <a href="{{ youtubeDeeplink }}{{ movie.youtubeTrailer }}" tabindex="1" class="btn btn-danger">
+                                    Trailer
+                                </a>
                             {% else %}
-                            <a href="https://www.youtube.com/watch?v={{ movie.youtubeTrailer }}" tabindex="1" class="btn btn-danger" style="width: 100%;" target="_blank">
-                                Trailer
-                            </a>
+                                <a href="https://www.youtube.com/watch?v={{ movie.youtubeTrailer }}" tabindex="1" class="btn btn-danger" style="width: 100%;" target="_blank">
+                                    Trailer
+                                </a>
                             {% endif %}
                         {% endif %}
-                        {% if not isTv %}
-                        <a href="{{ movie.streamLink }}" class="btn btn-primary">
-                            Download
-                        </a>
+                        {% if isAndroid or isIos %}
+                            {% for quality,link in links %}
+                                <a href="{{ baseUrlAbsolute }}/streams/flagAsView/movie/{{ link.id }}/{{ (vlcDeeplink ~ link.stream)|base64Encode }}" tabindex="1" class="btn btn-success">
+                                    Play {{ quality }}
+                                </a>
+                            {% endfor %}
                         {% endif %}
+                        {% if not isIos and not isAndroid and isChrome  %}
+                            {% for quality,link in links %}
+                                <a href="{{ baseUrlAbsolute }}/streams/flagAsView/movie/{{ link.id }}/{{ (baseUrlAbsolute ~ "/streams/play/movie/" ~ link.id)|base64Encode }}" tabindex="1" class="btn btn-success">
+                                    Webplayer {{ quality }}
+                                </a>
+                            {% endfor %}
+                        {% endif %}
+                        <hr>
+                        {% if not isTv %}
+                            {% for quality,link in links %}
+                                <a href="{{ link.stream }}" class="btn btn-primary" download>
+                                    Download {{ quality }}
+                                </a>
+                            {% endfor %}
+
+                        {% endif %}
+                        <hr>
                         {% if isFavorite %}
                         <a href="{{ baseUrlAbsolute }}/account/removefavorite/movie/{{ movie.streamId }}" class="btn btn-warning">
                             <i class=" fa fa-minus"></i> Favorite
