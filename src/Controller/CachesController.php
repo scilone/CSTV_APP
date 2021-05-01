@@ -6,7 +6,7 @@ use App\Application\Iptv;
 use App\Config\Param;
 use App\Infrastructure\SuperglobalesOO;
 
-class CacheController
+class CachesController
 {
     /**
      * @var SuperglobalesOO

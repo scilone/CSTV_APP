@@ -21,7 +21,7 @@ class Loader
             Service::INFRASTRUCTURE_SUPERGLOBALES,
             Service::APPLICATION_ACCOUNT,
         ],
-        Service::CONTROLLER_CACHE => [
+        Service::CONTROLLER_CACHES => [
             Service::INFRASTRUCTURE_SUPERGLOBALES,
         ],
         Service::CONTROLLER_EXTRA => [

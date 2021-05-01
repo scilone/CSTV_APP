@@ -10,7 +10,7 @@ Class Service
     const CONTROLLER_STREAM   = 'App\Controller\StreamsController';
     const CONTROLLER_EXTRA    = 'App\Controller\ExtraController';
     const CONTROLLER_ACCOUNT  = 'App\Controller\AccountController';
-    const CONTROLLER_CACHE    = 'App\Controller\CacheController';
+    const CONTROLLER_CACHES   = 'App\Controller\CachesController';
     const CONTROLLER_IMPORT   = 'App\Controller\ImportController';
     const CONTROLLER_COINBASE = 'App\Controller\CoinbaseController';
 
