@@ -40,6 +40,7 @@ class Loader
             Service::INFRASTRUCTURE_CACHE_RAW,
             Service::INFRASTRUCTURE_SUPERGLOBALES,
             Service::APPLICATION_ACCOUNT,
+            Service::INFRASTRUCTURE_IMDB
         ],
         Service::CONTROLLER_IMPORT => [
             Service::APPLICATION_IPTV,
@@ -48,8 +49,16 @@ class Loader
             Service::DOMAIN_REPOSITORY_CATEGORY,
             Service::DOMAIN_REPOSITORY_GENRE,
         ],
+        Service::CONTROLLER_COINBASE => [
+            Service::APPLICATION_TWIG,
+            Service::INFRASTRUCTURE_SUPERGLOBALES,
+            Service::INFRASTRUCTURE_COINBASE,
+            Service::DOMAIN_REPOSITORY_COINBASE_HISTO
+        ],
+
 
         Service::APPLICATION_TWIG => [
+            Service::APPLICATION_IPTV,
             Service::INFRASTRUCTURE_SUPERGLOBALES,
             Param::TWIG_GLOBAL_VARS,
         ],
@@ -65,6 +74,7 @@ class Loader
             Service::INFRASTRUCTURE_SUPERGLOBALES,
             Service::DOMAIN_REPOSITORY_ACCOUNT
         ],
+
 
         Service::DOMAIN_IPTV_XCODE_API => [
             Service::INFRASTRUCTURE_CURL,
@@ -89,7 +99,10 @@ class Loader
             Service::INFRASTRUCTURE_MYSQL,
             Service::INFRASTRUCTURE_CACHE_ITEM
         ],
-
+        Service::DOMAIN_REPOSITORY_COINBASE_HISTO => [
+            Service::INFRASTRUCTURE_MYSQL,
+            Service::INFRASTRUCTURE_CACHE_ITEM
+        ],
 
 
         Service::INFRASTRUCTURE_CACHE_RAW => [
@@ -105,6 +118,13 @@ class Loader
             SecretParam::DB_USERNAME,
             SecretParam::DB_PASSWORD,
             SecretParam::DB_DATABASE,
+        ],
+        Service::INFRASTRUCTURE_COINBASE => [
+            SecretParam::COINBASE_API_KEY,
+            SecretParam::COINBASE_API_SECRET
+        ],
+        Service::INFRASTRUCTURE_IMDB => [
+            Service::INFRASTRUCTURE_CURL
         ],
 
     ];

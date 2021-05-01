@@ -57,24 +57,39 @@ class ImportController
         $this->people   = $people;
         $this->category = $category;
         $this->genre    = $genre;
+
+        set_time_limit(60*5);
     }
 
     public function movie()
     {
         var_dump('Start import movie');
+        $time_start = microtime(true);
 
         $movies     = $this->iptv->getMovieStreamsFromApi([]);
         $categories = $this->iptv->getMovieCategoriesFromApi();
 
-        var_dump(count($movies));
+        $totalMovies = count($movies);
+        $pas = ceil($totalMovies/23);
 
-        foreach ($movies as $movie) {
-            if ($this->stream->getFromIdAndType($movie->getStreamId(), 'movie') !== []) {
-                var_dump('Stream passed: ' . $movie->getStreamId());
+        $nb = $_GET['nb'] ?? date('H');
+        $minId = 0+($pas*$nb);
+        $maxId = $minId + $pas;
+        var_dump($minId, $maxId);
+        foreach ($movies as $key => $movie) {
+            // if (mt_rand(0, 50) !== 0) {
+            //     continue;
+            // }
+            if ($key < $minId || $key > $maxId) {
                 continue;
             }
 
-            var_dump('Stream get info: ' . $movie->getStreamId());
+            if ($this->stream->getFromIdAndType($movie->getStreamId(), 'movie') !== []) {
+                // var_dump('Stream passed: ' . $movie->getStreamId());
+                continue;
+            }
+
+            // var_dump('Stream get info: ' . $movie->getStreamId());
 
             try {
                 $movieInfo = $this->iptv->getMovieInfo($movie->getStreamId());
@@ -118,6 +133,10 @@ class ImportController
             $this->addPeople($movieInfo->getDirector(), 'director', $movieInfo->getStreamId());
             $this->addPeople($movieInfo->getCast(), 'actor', $movieInfo->getStreamId());
         }
+
+        $time_end = microtime(true);
+        $time = $time_end - $time_start;
+        echo "End import movie in $time seconds";
     }
 
     public function serie()

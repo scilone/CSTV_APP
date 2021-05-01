@@ -7,7 +7,11 @@ use App\Application\Iptv;
 use App\Application\Twig;
 use App\Config\Param;
 use App\Domain\Iptv\DTO\Live;
+use App\Domain\Iptv\DTO\Serie;
+use App\Domain\Iptv\DTO\SerieInfo;
 use App\Infrastructure\CacheRaw;
+use App\Infrastructure\DTO\ImdbFilter;
+use App\Infrastructure\Imdb;
 use App\Infrastructure\SuperglobalesOO;
 use DateTime;
 
@@ -37,6 +41,11 @@ class StreamsController extends SecurityController
      */
     private $account;
 
+    /**
+     * @var Imdb
+     */
+    private $imdb;
+
     private $isAjax = false;
 
     public function __construct(
@@ -44,13 +53,15 @@ class StreamsController extends SecurityController
         Iptv $iptv,
         CacheRaw $cacheRaw,
         SuperglobalesOO $superglobales,
-        Account $account
+        Account $account,
+        Imdb $imdb
     ) {
         $this->twig          = $twig;
         $this->iptv          = $iptv;
         $this->cacheRaw      = $cacheRaw;
         $this->superglobales = $superglobales;
         $this->account       = $account;
+        $this->imdb          = $imdb;
 
         parent::__construct($superglobales);
 
@@ -562,6 +573,13 @@ class StreamsController extends SecurityController
         );
     }
 
+    private function hasSeeLastSerieEpisode(SerieInfo $serie): bool
+    {
+        $lastEpisode = end(end($serie->getEpisodes()))->getId();
+
+        return isset($this->superglobales->getSession()->get('flaggedStreams')['serie'][$lastEpisode]);
+    }
+
     public function serieInfo(string $id): void
     {
         $serie     = $this->iptv->getSerieInfo($id);
@@ -648,5 +666,115 @@ class StreamsController extends SecurityController
         $this->account->flagStreamAsView($type, $id);
 
         header('Location: ' . base64_decode($url));
+    }
+
+    public function suggestSerie($sort = 'moviemeter,asc')
+    {
+        $results = $this->imdb->filter(
+            new ImdbFilter(
+                1,
+                ['tvSeries','tvMiniSeries'],
+                7.0,
+                10000,
+                "$sort"
+            )
+        );
+
+        $streams        = $this->iptv->getSerieStreamsSuggested($results);
+        $categories     = $this->iptv->getSerieCategories();
+
+        $nbStreamsByCat = $this->iptv->getNbStreamByCat('serie');
+        $nbStreamsByCat += ['favorites' => count($this->superglobales->getSession()->get('favorites')['serie'] ?? [])];
+
+        $catName = 'Suggest';
+
+        $hiddenStreams = 0;
+        $hiddenCategories = [];
+        if (isset($this->superglobales->getSession()->get('hiddenCategories')['serie'])) {
+            foreach ($categories as $keyCat => $cat) {
+                if (isset($this->superglobales->getSession()->get('hiddenCategories')['serie'][$cat->getId()])) {
+                    $hiddenStreams += $nbStreamsByCat[$cat->getId()];
+                    $hiddenCategories[] = $cat;
+                    unset($categories[$keyCat]);
+                }
+            }
+        }
+
+        $nbStreamsByCat += ['hidden' => $hiddenStreams];
+
+        $render = $this->twig->render(
+            ($this->isAjax ? 'ajax/' : '') . 'streamsSerie.html.twig',
+            [
+                'start'            => $this->superglobales->getQuery()->get('start', 0),
+                'streams'          => $streams,
+                'type'             => 'serie',
+                'sort'             => $sort,
+                'search'           => null,
+                'currentCat'       => 'suggest',
+                'categories'       => $categories,
+                'hiddenCategories' => $hiddenCategories,
+                'catName'          => $catName,
+                'nbStreamsByCat'   => $nbStreamsByCat,
+                'isHidden'         => false,
+            ]
+        );
+
+        echo $render;
+    }
+
+    public function suggestMovie($sort = 'moviemeter,asc')
+    {
+        $results = $this->imdb->filter(
+            new ImdbFilter(
+                1,
+                ['movie','tvMovie','short'],
+                7.0,
+                10000,
+                "$sort"
+            )
+        );
+
+        $streams    = $this->iptv->getMovieStreamsSuggested($results);
+        $categories = $this->iptv->getMovieCategories();
+
+        $nbStreamsByCat = $this->iptv->getNbStreamByCat2('movie');
+        $nbStreamsByCat += ['favorites' => count($this->superglobales->getSession()->get('favorites')['movie'] ?? [])];
+
+        $catName = 'Suggest';
+
+        $hiddenCategories = [];
+        $hiddenStreams    = 0;
+        if (isset($this->superglobales->getSession()->get('hiddenCategories')['movie'])) {
+            foreach ($categories as $keyCat => $cat) {
+                if (isset($this->superglobales->getSession()->get('hiddenCategories')['movie'][$cat->getId()])) {
+                    $hiddenStreams += $nbStreamsByCat[$cat->getId()];
+                    $hiddenCategories[] = $cat;
+                    unset($categories[$keyCat]);
+                }
+            }
+        }
+
+        $nbStreamsByCat += ['hidden' => $hiddenStreams];
+
+        $render = $this->twig->render(
+            ($this->isAjax ? 'ajax/' : '') . 'streamsMovie.html.twig',
+            [
+                'start'            => $this->superglobales->getQuery()->get('start', 0),
+                'streams'          => $streams,
+                'type'             => 'movie',
+                'sort'             => $sort,
+                'search'           => null,
+                'currentCat'       => 'suggest',
+                'categories'       => $categories,
+                'hiddenCategories' => $hiddenCategories,
+                'catName'          => $catName,
+                'isHidden'         => false,
+                'contentAlloweded' => true,
+                'nbStreamsByCat'   => $nbStreamsByCat,
+                'streamView'       => $this->superglobales->getSession()->get('flaggedStreams')['movie']
+            ]
+        );
+
+        echo $render;
     }
 }

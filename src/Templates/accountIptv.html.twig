@@ -24,8 +24,38 @@
                     <input type="text" class="form-control" id="m3u" placeholder="convert m3u" name="m3u" tabindex="1">
                 </div>
                 <button type="submit" class="btn btn-default">Convert</button>
-
+                <br><br>
+                <div class="form-group">
+                    <label for="excludeQuality">Exclude quality:</label>
+                    <select name="excludeQuality[]" id="excludeQuality" multiple class="form-control" size="20">
+                        <optgroup label="Lang">
+                            <option value="AR" {% if 'AR' in excludeQuality %}selected{% endif %}>AR</option>
+                            <option value="BR" {% if 'BR' in excludeQuality %}selected{% endif %}>BR</option>
+                            <option value="DE" {% if 'DE' in excludeQuality %}selected{% endif %}>DE</option>
+                            <option value="ES" {% if 'ES' in excludeQuality %}selected{% endif %}>ES</option>
+                            <option value="EN" {% if 'EN' in excludeQuality %}selected{% endif %}>EN</option>
+                            <option value="FR" {% if 'FR' in excludeQuality %}selected{% endif %}>FR</option>
+                            <option value="IT" {% if 'IT' in excludeQuality %}selected{% endif %}>IT</option>
+                            <option value="NL" {% if 'NL' in excludeQuality %}selected{% endif %}>NL</option>
+                            <option value="PT" {% if 'PT' in excludeQuality %}selected{% endif %}>PT</option>
+                            <option value="TR" {% if 'TR' in excludeQuality %}selected{% endif %}>TR</option>
+                            <option value="VO" {% if 'VO' in excludeQuality %}selected{% endif %}>VO</option>
+                        </optgroup>
+                        <optgroup label="ST">
+                            <option value="STAR" {% if 'STAR' in excludeQuality %}selected{% endif %}>STAR</option>
+                            <option value="STEN" {% if 'STEN' in excludeQuality %}selected{% endif %}>STEN</option>
+                            <option value="STFR" {% if 'STFR' in excludeQuality %}selected{% endif %}>STFR</option>
+                            <option value="VOSTFR" {% if 'VOSTFR' in excludeQuality %}selected{% endif %}>VOSTFR</option>
+                        </optgroup>
+                        <optgroup label="Quality">
+                            <option value="3D" {% if '3D' in excludeQuality %}selected{% endif %}>3D</option>
+                            <option value="4K" {% if '4K' in excludeQuality %}selected{% endif %}>4K</option>
+                        </optgroup>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-default">Save</button>
             </form>
+
         </div>
     </div>
 </div>

@@ -2,6 +2,7 @@
 
 namespace App\Application;
 
+use App\Domain\Iptv\DTO\Serie;
 use App\Infrastructure\SuperglobalesOO;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
@@ -20,10 +21,16 @@ class Twig
      */
     private $superglobales;
 
-    public function __construct(SuperglobalesOO $superglobalesOO, array $globalVars)
+    /**
+     * @var Iptv
+     */
+    private $iptv;
+
+    public function __construct(Iptv $iptv, SuperglobalesOO $superglobalesOO, array $globalVars)
     {
-        $loader = new FilesystemLoader(__DIR__ . '/../Templates');
-        $this->twig = new Environment($loader);
+        $loader              = new FilesystemLoader(__DIR__ . '/../Templates');
+        $this->twig          = new Environment($loader);
+        $this->iptv          = $iptv;
         $this->superglobales = $superglobalesOO;
 
         foreach ($globalVars as $name => $value) {
@@ -46,11 +53,42 @@ class Twig
                 }
             )
         );
+        $this->twig->addFilter(
+            new TwigFilter(
+                'hasSeeLastEpisode',
+                function (Serie $serie) {
+                    $serieInfo   = $this->iptv->getSerieInfo($serie->getSerieId());
+                    $lastEpisode = end(end($serieInfo->getEpisodes()));
+
+                    if ($lastEpisode === null) {
+                        return false;
+                    }
+
+                    return isset($this->superglobales->getSession()->get('flaggedStreams')['serie'][$lastEpisode->getId()]);
+                }
+            )
+        );
     }
 
     private function addGenericFunctions(): void
     {
+        $excludesQuality = $this->superglobales->getSession()->get('excludeQuality');
+
         $this->twig->addFunction(new TwigFunction('sessionId', 'session_id'));
+        $this->twig->addFunction(
+            new TwigFunction(
+                'isAllowedQuality',
+                function ($string) use ($excludesQuality) {
+                    foreach ($excludesQuality as $excludeQuality) {
+                        if (strpos($string, "|$excludeQuality|") !== false) {
+                            return false;
+                        }
+                    }
+
+                    return true;
+                }
+            )
+        );
     }
 
     private function addGenericVars(): void

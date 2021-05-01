@@ -14,6 +14,7 @@
 
                 {% include 'Module/stars.html.twig' with {'rating': stream.rating5based} %}
             </div>
+            <div class="vignette" style="{% if currentCat != 'favorites' or stream|hasSeeLastEpisode %}display:none;{% endif %}">●</div>
         </div>
     </a>
 {% endfor %}

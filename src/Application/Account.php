@@ -105,6 +105,9 @@ class Account
         if (isset($userInfo['data']['flaggedStreams'])) {
             $this->superglobales->getSession()->set('flaggedStreams', $userInfo['data']['flaggedStreams']);
         }
+        if (isset($userInfo['data']['excludeQuality'])) {
+            $this->superglobales->getSession()->set('excludeQuality', $userInfo['data']['excludeQuality']);
+        }
 
         $this->generateCookiesAutolog($userInfo['id'], $password);
     }
@@ -157,6 +160,10 @@ class Account
 
         if (isset($userInfo['data']['flaggedStreams'])) {
             $this->superglobales->getSession()->set('flaggedStreams', $userInfo['data']['flaggedStreams']);
+        }
+
+        if (isset($userInfo['data']['excludeQuality'])) {
+            $this->superglobales->getSession()->set('excludeQuality', $userInfo['data']['excludeQuality']);
         }
     }
 
@@ -322,6 +329,16 @@ class Account
         );
 
         $this->superglobales->getSession()->set('hiddenCategories', $hiddenCategories);
+    }
+
+    public function addExcludeQuality(array $exclude)
+    {
+        $this->repository->addDataForUser(
+            $this->superglobales->getSession()->get('userId'),
+            ['excludeQuality' => $exclude]
+        );
+
+        $this->superglobales->getSession()->set('excludeQuality', $exclude);
     }
 
     public function flagStreamAsView(string $type, int $id): void

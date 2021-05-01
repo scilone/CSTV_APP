@@ -49,24 +49,30 @@
                         {% endif %}
                         {% if isAndroid or isIos %}
                             {% for quality,link in links %}
-                                <a href="{{ baseUrlAbsolute }}/streams/flagAsView/movie/{{ link.id }}/{{ (vlcDeeplink ~ link.stream)|base64Encode }}" tabindex="1" class="btn btn-success">
-                                    Play {{ quality }}
-                                </a>
+                                {% if isAllowedQuality(quality) %}
+                                    <a href="{{ baseUrlAbsolute }}/streams/flagAsView/movie/{{ link.id }}/{{ (vlcDeeplink ~ link.stream)|base64Encode }}" tabindex="1" class="btn btn-success">
+                                        Play {{ quality }}
+                                    </a>
+                                {% endif %}
                             {% endfor %}
                         {% endif %}
                         {% if not isIos and not isAndroid and isChrome  %}
                             {% for quality,link in links %}
-                                <a href="{{ baseUrlAbsolute }}/streams/flagAsView/movie/{{ link.id }}/{{ (baseUrlAbsolute ~ "/streams/play/movie/" ~ link.id)|base64Encode }}" tabindex="1" class="btn btn-success">
-                                    Webplayer {{ quality }}
-                                </a>
+                                {% if isAllowedQuality(quality) %}
+                                    <a href="{{ baseUrlAbsolute }}/streams/flagAsView/movie/{{ link.id }}/{{ (baseUrlAbsolute ~ "/streams/play/movie/" ~ link.id)|base64Encode }}" tabindex="1" class="btn btn-success">
+                                        Webplayer {{ quality }}
+                                    </a>
+                                {% endif %}
                             {% endfor %}
                             <hr>
                         {% endif %}
                         {% if not isTv %}
                             {% for quality,link in links %}
-                                <a href="{{ link.stream }}" class="btn btn-primary" download>
-                                    Download {{ quality }}
-                                </a>
+                                {% if isAllowedQuality(quality) %}
+                                    <a href="{{ link.stream }}" class="btn btn-primary" download>
+                                        Download {{ quality }}
+                                    </a>
+                                {% endif %}
                             {% endfor %}
                             <hr>
                         {% endif %}

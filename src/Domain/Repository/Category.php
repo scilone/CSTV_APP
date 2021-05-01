@@ -81,7 +81,7 @@ class Category
     public function getFromType(string $type): array
     {
         $result =  $this->connection->get()->query(
-            'SELECT * FROM `' . self::TABLE_NAME . '` WHERE `type` = "' . $type . '"'
+            'SELECT * FROM `' . self::TABLE_NAME . '` WHERE `type` = "' . $type . '" ORDER BY name'
         );
 
         if ($result === false) {

@@ -69,7 +69,7 @@ class People
         }
         $cachedData["$name-$role"] = $result;
 
-        $this->cacheItem->set($cacheKey, $result);
+        // $this->cacheItem->set($cacheKey, $result);
 
         return $result;
     }

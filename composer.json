@@ -18,10 +18,11 @@
         }
     },
   "require": {
-      "ext-curl": "*",
-      "ext-json": "*",
-      "twig/twig": "^2.11",
-      "ext-sodium": "*",
-      "ext-mysqli": "*"
-  }
+        "ext-curl": "*",
+        "ext-json": "*",
+        "ext-mysqli": "*",
+        "ext-sodium": "*",
+        "coinbase/coinbase": "^2.8",
+        "twig/twig": "^2.11"
+    }
 }

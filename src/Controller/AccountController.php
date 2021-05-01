@@ -35,7 +35,7 @@ class AccountController
 
     public function iptv()
     {
-        if ($this->superglobales->getPost()->has('m3u')) {
+        if (!empty($this->superglobales->getPost()->get('m3u'))) {
             $m3uParsed      = parse_url($this->superglobales->getPost()->get('m3u'));
             parse_str($m3uParsed['query'], $m3uQueryParsed);
             $host = "{$m3uParsed['scheme']}://{$m3uParsed['host']}:{$m3uParsed['port']}";
@@ -50,7 +50,14 @@ class AccountController
             $this->redirectToHome();
         }
 
-        if ($this->superglobales->getPost()->has('username')) {
+        if (!empty($this->superglobales->getPost()->get('excludeQuality'))
+            && $this->superglobales->getPost()->get('excludeQuality') !== $this->superglobales->getSession()->get('excludeQuality')
+        ) {
+            $this->account->addExcludeQuality($this->superglobales->getPost()->get('excludeQuality'));
+            $this->redirectToHome();
+        }
+
+        if (!empty($this->superglobales->getPost()->get('username'))) {
             $this->account->setIptvInfo(
                 $this->superglobales->getPost()->get('username'),
                 $this->superglobales->getPost()->get('password'),
@@ -63,9 +70,10 @@ class AccountController
         echo $this->twig->render(
             'accountIptv.html.twig',
             [
-                'username' => $this->superglobales->getSession()->get(Iptv::PREFIX . 'username'),
-                'password' => $this->superglobales->getSession()->get(Iptv::PREFIX . 'password'),
-                'host'     => $this->superglobales->getSession()->get(Iptv::PREFIX . 'host'),
+                'username'       => $this->superglobales->getSession()->get(Iptv::PREFIX . 'username'),
+                'password'       => $this->superglobales->getSession()->get(Iptv::PREFIX . 'password'),
+                'host'           => $this->superglobales->getSession()->get(Iptv::PREFIX . 'host'),
+                'excludeQuality' => $this->superglobales->getSession()->get('excludeQuality'),
             ]
         );
     }

@@ -403,7 +403,7 @@ class Iptv
             );
         }
 
-        $this->cache->set($cacheKey, $return);
+        // $this->cache->set($cacheKey, $return);
 
         return $return;
     }
@@ -503,6 +503,59 @@ class Iptv
         return $return;
     }
 
+    public function getMovieStreamsSuggested(array $listSuggest): array
+    {
+        $cacheKey    = $this->getCachePrefix() . '_getMovieStreamsSuggested_' . '_' . md5(http_build_query($listSuggest));
+        $cacheExpire = self::CACHE_EXPIRE;
+        $cachedData  = $this->cache->get($cacheKey, $cacheExpire);
+
+        if ($cachedData !== null) {
+            return $cachedData;
+        }
+
+        $list = $this->stream->getForSuggest($listSuggest, 'movie');
+
+        $return = [];
+        foreach ($list as $data) {
+            $name = $data['name'];
+            if (isset($filter['cat'])) {
+                $name = trim(preg_replace('#\|[\w\|]+\|#', '', $name));
+            }
+
+            if (strpos($name, '***') !== false) {
+                continue;
+            }
+
+            $streamLink = $this->superglobales->getSession()->get(self::PREFIX . 'host') .
+                          '/movie' .
+                          '/' . $this->superglobales->getSession()->get(self::PREFIX . 'username') .
+                          '/' . $this->superglobales->getSession()->get(self::PREFIX . 'password') .
+                          '/' . $data['id'] . '.' . $data['extension'];
+
+            $img = $data['img'];
+
+            $return[] = new Movie(
+                (int) $data['id'] ?? 0,
+                (string) $name,
+                (string) 'movie',
+                (int) $data['id'] ?? 0,
+                $img,
+                (float) $data['rating'] ?? 0,
+                (float) isset($data['rating']) ? round($data['rating']/2, 2) : 0,
+                DateTimeImmutable::createFromFormat('U', $data['added'] ?? 0),
+                (int) $data['category_id'] ?? 0,
+                (string) $data['extension'] ?? '',
+                '',
+                '',
+                $streamLink
+            );
+        }
+
+        $this->cache->set($cacheKey, $return);
+
+        return $return;
+    }
+
     /**
      * @param array $filter
      * @param int   $sorted
@@ -562,6 +615,66 @@ class Iptv
                 '',
                 '',
                 $streamLink
+            );
+        }
+
+        // $this->cache->set($cacheKey, $return);
+
+        return $return;
+    }
+
+    public function getSerieStreamsSuggested(array $listSuggest): array
+    {
+        $cacheKey    = $this->getCachePrefix() . '_getSerieStreamsSuggest_' . '_' . md5(http_build_query($listSuggest));
+        $cacheExpire = self::CACHE_EXPIRE;
+        $cachedData  = $this->cache->get($cacheKey, $cacheExpire);
+
+        if ($cachedData !== null) {
+            return $cachedData;
+        }
+
+        $list = $this->stream->getForSuggest($listSuggest, 'serie');
+
+        $return = [];
+        foreach ($list as $data) {
+            $name = $data['name'];
+            $img  = $data['img'];
+
+            $backdrop = [];
+            if (is_array($data->backdrop_path)) {
+                foreach ($data->backdrop_path as $value) {
+                    $backdrop[] = '/asset/img/' . base64_encode($value);
+                }
+            }
+
+            $dateRelease = $data['releasedate'];
+            if (strpos($dateRelease, '/') !== false) {
+                $tmp         = explode('/', $dateRelease);
+                $dateRelease = "$tmp[2]-$tmp[1]-$tmp[0]";
+            }
+
+            if (strtotime($dateRelease) === false) {
+                $dateRelease = null;
+            }
+
+
+            $return[] = new Serie(
+                (int) $data['id'],
+                (string) $data['name'],
+                (int) $data['id'],
+                $img,
+                (string) $data['resume'],
+                '',
+                '',
+                '',
+                new DateTimeImmutable($dateRelease),
+                DateTimeImmutable::createFromFormat('U', $data['added']),
+                (float) $data['rating'] ?? 0,
+                (float) isset($data['rating']) ? $data['rating']/2 : 0,
+                $backdrop,
+                (string) $data['youtube_trailer'] ?? '',
+                0,
+                (int) $data['category_id'] ?? 0
             );
         }
 
@@ -634,7 +747,7 @@ class Iptv
             );
         }
 
-        $this->cache->set($cacheKey, $return);
+        // $this->cache->set($cacheKey, $return);
 
         return $return;
     }
@@ -906,7 +1019,7 @@ class Iptv
             $streamLink
         );
 
-        $this->cache->set($cacheKey, $data);
+        // $this->cache->set($cacheKey, $data);
 
         return $data;
     }
@@ -1010,7 +1123,7 @@ class Iptv
             $episodes
         );
 
-        $this->cache->set($cacheKey, $data);
+        // $this->cache->set($cacheKey, $data);
 
         return $data;
     }

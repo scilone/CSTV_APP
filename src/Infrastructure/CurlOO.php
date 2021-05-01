@@ -30,4 +30,14 @@ class CurlOO
     {
         return curl_exec($this->ch);
     }
+
+    public function getInfo()
+    {
+        return curl_getinfo($this->ch);
+    }
+
+    public function getError()
+    {
+        return curl_error($this->ch);
+    }
 }

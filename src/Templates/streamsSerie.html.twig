@@ -30,15 +30,27 @@
         </div>
         <div class="pull-right">
             <div class="btn-group" role="group">
-                <a href="{{ baseUrlAbsolute }}/streams/{{ type }}/{{ currentCat }}/{% if sort == 2 %}1{% else %}2{% endif %}/{{ search }}" tabindex="3" class="btn">
-                    <i class="fa fa-sort-alpha-asc"></i>
-                </a>
-                <a href="{{ baseUrlAbsolute }}/streams/{{ type }}/{{ currentCat }}/{% if sort == 3 %}4{% else %}3{% endif %}/{{ search }}" tabindex="3" class="btn">
-                    <i class="fa fa-star"></i>
-                </a>
-                <a href="{{ baseUrlAbsolute }}/streams/{{ type }}/{{ currentCat }}/{% if sort == 6 %}6{% else %}5{% endif %}/{{ search }}" tabindex="3" class="btn">
-                    <i class="fa fa-clock-o"></i>
-                </a>
+                {% if currentCat == 'suggest' %}
+                    <a href="{{ baseUrlAbsolute }}/streams/suggestSerie/moviemeter,asc" tabindex="3" class="btn">
+                        <i class="fa"></i>
+                    </a>
+                    <a href="{{ baseUrlAbsolute }}/streams/suggestSerie/user_rating,desc" tabindex="3" class="btn">
+                        <i class="fa fa-star"></i>
+                    </a>
+                    <a href="{{ baseUrlAbsolute }}/streams/suggestSerie/release_date,desc" tabindex="3" class="btn">
+                        <i class="fa fa-clock-o"></i>
+                    </a>
+                {% else %}
+                    <a href="{{ baseUrlAbsolute }}/streams/{{ type }}/{{ currentCat }}/{% if sort == 2 %}1{% else %}2{% endif %}/{{ search }}" tabindex="3" class="btn">
+                        <i class="fa fa-sort-alpha-asc"></i>
+                    </a>
+                    <a href="{{ baseUrlAbsolute }}/streams/{{ type }}/{{ currentCat }}/{% if sort == 3 %}4{% else %}3{% endif %}/{{ search }}" tabindex="3" class="btn">
+                        <i class="fa fa-star"></i>
+                    </a>
+                    <a href="{{ baseUrlAbsolute }}/streams/{{ type }}/{{ currentCat }}/{% if sort == 6 %}6{% else %}5{% endif %}/{{ search }}" tabindex="3" class="btn">
+                        <i class="fa fa-clock-o"></i>
+                    </a>
+                {% endif %}
             </div>
             <div class="btn-group" role="group">
                 <a tabindex="4" class="btn" id="search">
@@ -52,6 +64,11 @@
     </div>
     <div class="sidenav col-sm-3 col-xs-3 col-md-2">
         <ul>
+            <a href="{{ baseUrlAbsolute }}/streams/suggestSerie"
+               style="{% if currentCat == 'suggest' %}color:white{% endif %}"
+               tabindex="2">
+                <li>SUGGEST</li>
+            </a>
             <a href="{{ baseUrlAbsolute }}/streams/{{ type }}/all"
                style="{% if currentCat == 'all' and sort != 5 %}color:white{% endif %}"
                tabindex="2">
@@ -68,16 +85,18 @@
                 <li>RECENTLY ADDED (100)</li>
             </a>
             {% for category in categories %}
-                <a href="{{ baseUrlAbsolute }}/streams/{{ type }}/{{ category.id }}"
-                   style="{% if catName == category.name %}color:white{% endif %}"
-                   tabindex="2">
-                    <li>
-                        {{ category.name }}
-                        {% if nbStreamsByCat[category.id] is defined %}
-                            ({{ nbStreamsByCat[category.id] }})
-                        {% endif %}
-                    </li>
-                </a>
+                {% if isAllowedQuality(category.name) %}
+                    <a href="{{ baseUrlAbsolute }}/streams/{{ type }}/{{ category.id }}"
+                       style="{% if catName == category.name %}color:white{% endif %}"
+                       tabindex="2">
+                        <li>
+                            {{ category.name }}
+                            {% if nbStreamsByCat[category.id] is defined %}
+                                ({{ nbStreamsByCat[category.id] }})
+                            {% endif %}
+                        </li>
+                    </a>
+                {% endif %}
             {% endfor %}
             <a style="opacity: 0.5;"
                id="hiddenCats"
@@ -116,6 +135,7 @@
 
                         {% include 'Module/stars.html.twig' with {'rating': stream.rating5based} %}
                     </div>
+                    <div class="vignette" style="{% if currentCat != 'favorites' or stream|hasSeeLastEpisode %}display:none;{% endif %}">●</div>
                 </div>
             </a>
         {% endfor %}

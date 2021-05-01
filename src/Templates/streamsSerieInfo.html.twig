@@ -33,9 +33,11 @@
                         {% include 'Module/stars.html.twig' with {'rating': serie.rating5based} %}
                     </div>
                     {% for alternateName,alternateUrl in alternates %}
-                        <a href="{{ alternateUrl }}" tabindex="1" class="btn btn-success">
-                            Alternate {{ alternateName }}
-                        </a>
+                        {% if isAllowedQuality(alternateName) %}
+                            <a href="{{ alternateUrl }}" tabindex="1" class="btn btn-success">
+                                Alternate {{ alternateName }}
+                            </a>
+                        {% endif %}
                     {% endfor %}
                     <hr>
                     {% if serie.youtubeTrailer is not empty  %}

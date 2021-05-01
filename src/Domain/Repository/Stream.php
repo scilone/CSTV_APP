@@ -111,6 +111,38 @@ class Stream
         );
     }
 
+    public function getForSuggest(array $list, string $type): array
+    {
+        $sql = '';
+        foreach ($list as $stream) {
+            $name = $this->connection->get()->real_escape_string($stream['name']);
+            $year = current(explode('–', $stream['year']));
+
+            if (is_numeric($year) === false) {
+                continue;
+            }
+
+            $sql .= "SELECT * FROM (SELECT * FROM " . self::TABLE_NAME . " WHERE name LIKE '%$name%' AND YEAR
+            (releasedate) = $year AND type = '$type' ORDER BY locate('|FR|', name) DESC LIMIT 1) AS t UNION ";
+        }
+
+        $sql = rtrim($sql, 'UNION ');
+
+        $result =  $this->connection->get()->query($sql);
+
+        if ($result === false) {
+            return [];
+        }
+
+        $result = $result->fetch_all(MYSQLI_ASSOC);
+
+        if ($result === null) {
+            return [];
+        }
+
+        return $result;
+    }
+
     public function getFromType(
         string $type,
         ?int $categoryId = null,
@@ -176,10 +208,14 @@ class Stream
             if (!empty($advancedSearch['rate'])) {
                 $searchFilter .= " AND streams.rating >= {$advancedSearch['rate']}";
             }
+
+            $searchFilter .= " AND (streams.name NOT LIKE '%adult%' AND streams.name NOT LIKE '%\+18%' AND streams.name NOT LIKE '%♀%')";
         } elseif (!empty($search)) {
             $joinTables = ' JOIN app_streams_people sp ON sp.stream_id = streams.id JOIN app_people AS people ON people.id = sp.people_id';
             $searchFilter = " AND (streams.name LIKE '%$search%' OR people.name LIKE '%$search%')";
+            $searchFilter .= " AND (streams.name NOT LIKE '%adult%' AND streams.name NOT LIKE '%\+18%' AND streams.name NOT LIKE '%♀%')";
         }
+        //if (mb_stripos($catName, 'adult') || mb_stripos($catName, '18') || mb_stripos($catName, '♀')) {
 
         $result =  $this->connection->get()->query(
             'SELECT streams.* FROM ' . self::TABLE_NAME . ' AS streams ' . $joinTables .

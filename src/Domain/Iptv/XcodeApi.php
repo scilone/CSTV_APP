@@ -99,12 +99,12 @@ class XcodeApi
             $i++;
         } while ($error && $i < 10);
 
-        if ($error === false) {
-            $this->cache->set(
-                md5($host . $username) . '_' . $action . http_build_query($extra),
-                $data
-            );
-        }
+        // if ($error === false) {
+        //     $this->cache->set(
+        //         md5($host . $username) . '_' . $action . http_build_query($extra),
+        //         $data
+        //     );
+        // }
 
         return $dataDecoded;
     }
