@@ -291,7 +291,7 @@ class Iptv
             $name = $data->name ?? '';
             if (isset($filter['cat'])) {
                 $name = str_replace(
-                    ['SD','LQ','FHD','HD', 'HEVC','UHD','4K','sd', 'lq','hd', 'hevc','fhd','uhd','4k'],
+                    ['SD','LQ','FHD','HD+','HD', 'HEVC','UHD','4K','sd', 'lq', 'hd+', 'hd', 'hevc','fhd','uhd','4k'],
                     '',
                     $name
                 );
@@ -329,7 +329,7 @@ class Iptv
     private function stripQuality(string $string): string
     {
         return str_replace(
-            ['SD','LQ','UHD','FHD','HD', 'HEVC','4K','sd','lq','uhd','fhd','hd','hevc','4k'],
+            ['SD','LQ','UHD','FHD','HD+','HD', 'HEVC','4K','sd','lq','uhd','fhd','hd+','hd','hevc','4k'],
             '',
             $string
         );
@@ -375,6 +375,8 @@ class Iptv
                 $quality = '4K';
             } elseif (stripos($data->name, 'HEVC') !== false) {
                 $quality = 'HEVC';
+            } elseif (stripos($data->name, 'HD+') !== false) {
+                $quality = 'HD+';
             } elseif (stripos($data->name, 'HD') !== false) {
                 $quality = 'HD';
             }

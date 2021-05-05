@@ -148,14 +148,17 @@ class StreamsController extends SecurityController
         if (isset($streams['UHD'])) {
             $streamsSorted['UHD'] = $streams['UHD'];
         }
+        if (isset($streams['HD+'])) {
+            $streamsSorted['HD+'] = $streams['HD+'];
+        }
         if (isset($streams['FHD'])) {
             $streamsSorted['FHD'] = $streams['FHD'];
         }
-        if (isset($streams['HD'])) {
-            $streamsSorted['HD'] = $streams['HD'];
-        }
         if (isset($streams['HEVC'])) {
             $streamsSorted['HEVC'] = $streams['HEVC'];
+        }
+        if (isset($streams['HD'])) {
+            $streamsSorted['HD'] = $streams['HD'];
         }
         if (isset($streams['SD'])) {
             $streamsSorted['SD'] = $streams['SD'];
@@ -551,7 +554,7 @@ class StreamsController extends SecurityController
     private function stripQuality(string $string): string
     {
         return trim(str_replace(
-            ['SD','LQ','UHD','FHD','HD', 'HEVC','4K','sd','lq','uhd','fhd','hd','hevc','4k'],
+            ['SD','LQ','UHD','FHD','HD+','HD', 'HEVC','4K','sd','lq','uhd','fhd','hd+','hd','hevc','4k'],
             '',
             $string
         ));
