@@ -1125,7 +1125,7 @@ class Iptv
             $episodes
         );
 
-        // $this->cache->set($cacheKey, $data);
+        $this->cache->set($cacheKey, $data);
 
         return $data;
     }
