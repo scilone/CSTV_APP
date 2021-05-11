@@ -1049,8 +1049,10 @@ class Iptv
         $img = '/asset/img/' . base64_encode($info->cover ?? '');
 
         $backdrop = [];
-        foreach ($info->backdrop_path as $value) {
-            $backdrop[] = '/asset/img/' . base64_encode($value);
+        if (isset($info->backdrop_path)) {
+            foreach ($info->backdrop_path as $value) {
+                $backdrop[] = '/asset/img/' . base64_encode($value);
+            }
         }
 
         $seasons = [];

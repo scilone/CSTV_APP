@@ -96,6 +96,11 @@ class Twig
         $userAgent = $this->superglobales->getServer()->get('HTTP_USER_AGENT');
 
         $this->twig->addGlobal(
+            'userAgent',
+            $userAgent
+        );
+
+        $this->twig->addGlobal(
             'isIos',
             $isIos =
             stripos($userAgent, 'iPod') !== false
@@ -110,6 +115,7 @@ class Twig
                     || stripos($userAgent, 'Web0S') !== false
                     || stripos($userAgent, 'BRAVIA') !== false
                     || stripos($userAgent, 'MIBOX') !== false
+                    || stripos($userAgent, 'Bouygtel') !== false
         );
 
         $this->twig->addGlobal('isAndroid', $isAndroid = stripos($userAgent, 'Android') !== false);

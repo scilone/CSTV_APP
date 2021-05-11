@@ -155,8 +155,9 @@
                 top: 0;
                 left: 0;
                 background-color: #111;
-                overflow-x: hidden;
+                overflow: hidden;
                 padding: 5em 0;
+                transition: all 0.3s;
             }
 
             .sidenav a {
@@ -241,6 +242,25 @@
                 $(this).hide();
                 $('.modal-custom').hide();
             });
+
+            $('.sidenav').hover(function(){
+                $('.sidenav').css('overflow', 'auto');
+            });
+
+            $('#hiddenCats').click(function () {
+                $('.hidden-cat').toggle();
+            });
+
+            $('body').on('click', '.toggleSidebar', function(){
+                $('.sidenav').toggle();
+                $('#flex').toggleClass('flex-full');
+                return false;
+            });
+            // $('.toggleSidebar').click(function(){
+            //     $('.sidenav').toggle();
+            //     $('#flex').toggleClass('flex-full');
+            //     return false;
+            // });
         </script>
     {% block js %}
 

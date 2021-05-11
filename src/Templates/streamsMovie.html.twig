@@ -62,63 +62,8 @@
             </div>
         </div>
     </div>
-    <div class="sidenav col-sm-3 col-xs-3 col-md-2">
-        <ul>
-            <a href="{{ baseUrlAbsolute }}/streams/suggestMovie"
-               style="{% if currentCat == 'suggest' %}color:white{% endif %}"
-               tabindex="2">
-                <li>SUGGEST</li>
-            </a>
-            <a href="{{ baseUrlAbsolute }}/streams/{{ type }}/all"
-               style="{% if currentCat == 'all' and sort != 5 %}color:white{% endif %}"
-               tabindex="2">
-                <li>ALL ({{ nbStreamsByCat["all"] }})</li>
-            </a>
-            <a href="{{ baseUrlAbsolute }}/streams/{{ type }}/favorites"
-               style="{% if currentCat == 'favorites' %}color:white{% endif %}"
-               tabindex="2">
-                <li>FAVORITES ({{ nbStreamsByCat["favorites"] }})</li>
-            </a>
-            <a href="{{ baseUrlAbsolute }}/streams/{{ type }}/all/5"
-               style="{% if currentCat == 'all' and sort == 5 %}color:white{% endif %}"
-               tabindex="2">
-                <li>RECENTLY ADDED (100)</li>
-            </a>
-        {% for category in categories %}
-            {% if isAllowedQuality(category.name) %}
-                <a href="{{ baseUrlAbsolute }}/streams/{{ type }}/{{ category.id }}"
-                   style="{% if catName == category.name %}color:white{% endif %}"
-                   tabindex="2">
-                    <li>
-                        {{ category.name }}
-                        {% if nbStreamsByCat[category.id] is defined %}
-                            ({{ nbStreamsByCat[category.id] }})
-                        {% endif %}
-                    </li>
-                </a>
-            {% endif %}
-        {% endfor %}
-            <a style="opacity: 0.5;"
-               id="hiddenCats"
-               tabindex="2">
-                <li>HIDDEN ({{ nbStreamsByCat["hidden"] }})</li>
-            </a>
-        {% for category in hiddenCategories %}
-            <a href="{{ baseUrlAbsolute }}/streams/{{ type }}/{{ category.id }}"
-               style="{% if catName == category.name %}color:white;{% endif %} opacity: 0.5; display: none;"
-               class=" hidden-cat"
-               tabindex="2">
-                <li>
-                    {{ category.name }}
-                    {% if nbStreamsByCat[category.id] is defined %}
-                        ({{ nbStreamsByCat[category.id] }})
-                    {% endif %}
-                </li>
-            </a>
-        {% endfor %}
-        </ul>
-    </div>
-    <div id="flex" class="flex-images col-sm-offset-3 col-sm-9 col-xs-offset-3 col-xs-9 col-md-offset-2 col-md-10">
+
+    <div id="flex" class="flex-images col-sm-9 col-xs-9 col-md-10">
         {% if not contentAlloweded %}
             <form method="post" class="form-inline" >
                 <input type="password" name="pass" class="form-control" autocomplete="off" placeholder="Password">
@@ -147,13 +92,66 @@
             {% endfor %}
         {% endif %}
     </div>
+    <div class="sidenav col-sm-offset-9 col-sm-3 col-xs-offset-9 col-xs-3 col-md-offset-10 col-md-2">
+        <ul>
+            <a href="{{ baseUrlAbsolute }}/streams/suggestMovie"
+               style="{% if currentCat == 'suggest' %}color:white{% endif %}">
+                <li>SUGGEST</li>
+            </a>
+            <a href="{{ baseUrlAbsolute }}/streams/{{ type }}/all"
+               style="{% if currentCat == 'all' and sort != 5 %}color:white{% endif %}"
+               tabindex="2">
+                <li>ALL ({{ nbStreamsByCat["all"] }})</li>
+            </a>
+            <a href="{{ baseUrlAbsolute }}/streams/{{ type }}/favorites"
+               style="{% if currentCat == 'favorites' %}color:white{% endif %}"
+               tabindex="2">
+                <li>FAVORITES ({{ nbStreamsByCat["favorites"] }})</li>
+            </a>
+            <a href="{{ baseUrlAbsolute }}/streams/{{ type }}/all/5"
+               style="{% if currentCat == 'all' and sort == 5 %}color:white{% endif %}"
+               tabindex="2">
+                <li>RECENTLY ADDED (100)</li>
+            </a>
+            {% for category in categories %}
+                {% if isAllowedQuality(category.name) %}
+                    <a href="{{ baseUrlAbsolute }}/streams/{{ type }}/{{ category.id }}"
+                       style="{% if catName == category.name %}color:white{% endif %}"
+                       tabindex="2">
+                        <li>
+                            {{ category.name }}
+                            {% if nbStreamsByCat[category.id] is defined %}
+                                ({{ nbStreamsByCat[category.id] }})
+                            {% endif %}
+                        </li>
+                    </a>
+                {% endif %}
+            {% endfor %}
+            <a style="opacity: 0.5;"
+               id="hiddenCats"
+               tabindex="2">
+                <li>HIDDEN ({{ nbStreamsByCat["hidden"] }})</li>
+            </a>
+            {% for category in hiddenCategories %}
+                <a href="{{ baseUrlAbsolute }}/streams/{{ type }}/{{ category.id }}"
+                   style="{% if catName == category.name %}color:white;{% endif %} opacity: 0.5; display: none;"
+                   class=" hidden-cat"
+                   tabindex="2">
+                    <li>
+                        {{ category.name }}
+                        {% if nbStreamsByCat[category.id] is defined %}
+                            ({{ nbStreamsByCat[category.id] }})
+                        {% endif %}
+                    </li>
+                </a>
+            {% endfor %}
+        </ul>
+    </div>
     {% include 'Module/lazyload.html.twig' %}
 {% endblock %}
 
 {% block js %}
     <script>
-        $('#hiddenCats').click(function () {
-            $('.hidden-cat').toggle();
-        });
+        $('.sidenav').css('overflow', 'auto');
     </script>
 {% endblock %}

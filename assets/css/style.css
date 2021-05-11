@@ -68,7 +68,7 @@ strong {
 }
 
 p {
-    margin: 0 0 30px;
+    /*margin: 0 0 30px;*/
 }
 
 input:focus, textarea:focus, input[type="text"]:focus {
@@ -665,4 +665,9 @@ a.btn-default:focus, a.btn-default:hover {
 .form-control:focus {
     border-width: medium;
     border-color: rgba(232,177,44, .8);
+}
+
+.flex-full {
+    width: 100%;
+    margin-left: 0;
 }
