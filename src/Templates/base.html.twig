@@ -20,11 +20,86 @@
                   crossorigin="anonymous">
             {% endblock %}
 
+            <script type="text/javascript" src="http://code.jquery.com/jquery.min.js"></script>
+
             {% block extraACss %}{% endblock %}
-            {% block extraAJs %}{% endblock %}
+            {% block extraAJs %}
+                <script>
+                    var isLiveStream = false;
+                </script>
+            {% endblock %}
     {% endblock %}
     </head>
     <body>
+        <script>
+            var deviceType = 'mobileS';
+
+            function setDeviceType () {
+                deviceType = 'mobileS';
+                if ($(document).width() >= 2560) {
+                    deviceType = 'laptop4k';
+                } else if ($(document).width() >= 1440) {
+                    deviceType = 'laptopL';
+                } else if ($(document).width() >= 1024) {
+                    deviceType = 'desktop';
+                } else if ($(document).width() >= 768) {
+                    deviceType = 'tablet';
+                } else if ($(document).width() >= 425) {
+                    deviceType = 'mobileL';
+                } else if ($(document).width() >= 320) {
+                    deviceType = 'mobileM';
+                }
+            }
+
+            var nbFlexItem = 6;
+            function setFlexItemSize () {
+                nbFlexItem = 6;
+                switch (deviceType) {
+                    case "mobileS":
+                        nbFlexItem = 2;
+                        break;
+                    case "mobileM":
+                    case "mobileL":
+                        nbFlexItem = 3;
+                        break;
+                    case "tablet":
+                        nbFlexItem = 6;
+                        break;
+                    case "desktop":
+                        nbFlexItem = 8;
+                        break;
+                    case "laptopL":
+                        nbFlexItem = 12;
+                        break;
+                    case "laptop4k":
+                        nbFlexItem = 15;
+                        break;
+                }
+
+                var widthFlexItem = Math.floor(($('#flex').width() /nbFlexItem) - 6);
+                var heigthFlexItem = Math.floor(widthFlexItem * 1.6);
+
+                if (isLiveStream === true) {
+                    heigthFlexItem = widthFlexItem;
+                }
+
+                $('#flex .item img').css({'width': widthFlexItem + 'px', 'height': heigthFlexItem + 'px'});
+            }
+
+            setDeviceType();
+
+            $(document).ready(function () {
+                setFlexItemSize();
+            });
+
+            $(window).on("orientationchange", function() {
+                setTimeout(function(){
+                    setDeviceType();
+                    setFlexItemSize();
+                }, 250);
+
+            });
+        </script>
         <style>
             #header {
                 background: rgb(24, 26, 27);
@@ -76,7 +151,6 @@
 
             #flex {
                 padding-top: 5em;
-                padding-left: 2em;
             }
 
             #flex .over {
@@ -105,14 +179,14 @@
             }
 
             .flex-images .item img {
-                width: 100px;
-                height: 160px;
+                width: 6em;
+                height: 10em;
                 object-fit: contain;
             }
 
             #flex a:focus > .item {
-                border: 4px solid #e8b12c;
-                margin: 1px;
+                border: 5px solid #e8b12c;
+                margin: -2px;
             }
 
             #flex a:focus > .item > .over {
@@ -158,6 +232,7 @@
                 overflow: hidden;
                 padding: 5em 0;
                 transition: all 0.3s;
+                display: none;
             }
 
             .sidenav a {
@@ -198,8 +273,6 @@
 
 {#        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"#}
 {#            crossorigin="anonymous"></script>#}
-
-        <script type="text/javascript" src="http://code.jquery.com/jquery.min.js"></script>
 
         <div id="overlay"></div>
         {% block body %}
@@ -261,6 +334,21 @@
             //     $('#flex').toggleClass('flex-full');
             //     return false;
             // });
+
+            {% if username == 'scilone'  %}
+            // $(window).scroll(function() {
+            //     if ($('.item-link:focus').length > 0) {
+            //         $('.item-link:focus').nextAll('.item-link').each(function() {
+            //             let item = $(this).find('.item');
+            //             if (item.visible() === false && item.visible(true)) {
+            //                 $(window).scrollTop((item.offset().top + item.height())-($(window).scrollTop() + $(window).height()))
+            //                 return false;
+            //             }
+            //         });
+            //     }
+            //
+            // });
+            {% endif %}
         </script>
     {% block js %}
 

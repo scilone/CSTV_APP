@@ -41,7 +41,7 @@
                     {% endfor %}
                     <hr>
                     {% if serie.youtubeTrailer is not empty  %}
-                        {% if isAndroid or isIos %}
+                        {% if isMobile %}
                             <a href="{{ youtubeDeeplink }}{{ serie.youtubeTrailer }}" tabindex="1" class="btn btn-danger">
                                 Trailer
                             </a>
@@ -134,12 +134,12 @@
                                         {% include 'Module/stars.html.twig' with {'rating': rating5} %}
                                     </div>
                                     <div class="col-md-3 col-sm-3 col-xs-3" style="padding: 0;">
-                                        {% if isAndroid or isIos %}
+                                        {% if isMobile %}
                                         <a href="{{ baseUrlAbsolute }}/streams/flagAsView/serie/{{ episode.id }}/{{ (vlcDeeplink ~ episode.streamLink)|base64Encode }}" tabindex="1" class="btn btn-primary pull-right" style="font-size: 10px">
                                             Play
                                         </a>
                                         {% endif %}
-                                        {% if not isIos and not isAndroid and isChrome  %}
+                                        {% if not isMobile and isChrome  %}
                                         <a href="{{ baseUrlAbsolute }}/streams/flagAsView/serie/{{ episode.id }}/{{ (baseUrlAbsolute ~ "/streams/play/serie/" ~ serie.id ~ "/" ~ season ~ "/" ~ episode.episodeNum)|base64Encode }}" tabindex="1" class="btn btn-success pull-right" style="font-size: 10px">
                                             Webplayer
                                         </a>

@@ -78,7 +78,7 @@
                                         <p><b>{{ replay.start|date('H:i') }} - {{ replay.end|date('H:i') }}</b></p>
                                     </div>
                                     <div class="col-md-3 col-sm-3 col-xs-4" style="padding-left: initial">
-                                        {% if isAndroid or isIos %}
+                                        {% if isMobile %}
                                             <a href="{{ vlcDeeplink ~ replay.streamLink }}" tabindex="1" class="btn btn-primary pull-right" style="width: 80%; font-size: 10px">
                                                 Play
                                             </a>

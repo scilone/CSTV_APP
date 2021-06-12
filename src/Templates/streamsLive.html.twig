@@ -5,6 +5,13 @@
     <link rel="stylesheet" href="{{ baseUrlAbsolute }}/css/jquery.flex-images.css">
 {% endblock %}
 
+{% block extraAJs %}
+    {{ parent() }}
+    <script>
+        isLiveStream = true;
+    </script>
+{% endblock %}
+
 {% block body %}
     {% include 'Module/search.html.twig' %}
 
@@ -15,10 +22,8 @@
         }
 
         .flex-images .item img {
-            width: 100px !important;
-            height: 100px !important;
+            height: 6em;
         }
-
 
     </style>
 
@@ -26,6 +31,9 @@
         <div class="pull-left">
             <a href="{{ baseUrlAbsolute ~ homeUrlAbsolute }}" tabindex="5" class="btn">
                 <i class="fa fa-home"></i>
+            </a>
+            <a tabindex="5" class="btn toggleSidebar">
+                <i class="fa fa-bars"></i>
             </a>
             {% if catName != '' %}
                 {% if isHidden %}
@@ -97,7 +105,7 @@
             {% endfor %}
         </ul>
     </div>
-    <div id="flex" class="flex-images col-sm-offset-3 col-sm-9 col-xs-offset-3 col-xs-9 col-md-offset-2 col-md-10">
+    <div id="flex" class="flex-full flex-images col-sm-offset-3 col-sm-9 col-xs-offset-3 col-xs-9 col-md-offset-2 col-md-10">
         {% if not contentAlloweded %}
         <form method="post" class="form-inline" >
             <input type="password" name="pass" class="form-control" autocomplete="off" placeholder="Password">

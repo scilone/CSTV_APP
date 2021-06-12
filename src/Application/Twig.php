@@ -125,10 +125,21 @@ class Twig
             $this->twig->addGlobal('vlcDeeplink', '');
         }
 
+        $this->twig->addGlobal(
+            'isMobile',
+            $isIos || $isAndroid
+        );
+
+        $this->twig->addGlobal(
+            'isTablet',
+            stripos($userAgent, 'iPad') !== false
+        );
+
         $currentUrl = 'https://' . $this->superglobales->getServer()->get('HTTP_HOST')
                       . $this->superglobales->getServer()->get('REQUEST_URI');
 
         $this->twig->addGlobal('currentUrl', $currentUrl);
+        $this->twig->addGlobal('username', $this->superglobales->getSession()->get('username'));
     }
 
     /**

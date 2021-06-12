@@ -37,7 +37,7 @@
                         {% include 'Module/stars.html.twig' with {'rating': rating5} %}
 
                         {% if movie.youtubeTrailer is not empty  %}
-                            {% if isAndroid or isIos %}
+                            {% if isMobile %}
                                 <a href="{{ youtubeDeeplink }}{{ movie.youtubeTrailer }}" tabindex="1" class="btn btn-danger">
                                     Trailer
                                 </a>
@@ -47,7 +47,7 @@
                                 </a>
                             {% endif %}
                         {% endif %}
-                        {% if isAndroid or isIos %}
+                        {% if isMobile %}
                             {% for quality,link in links %}
                                 {% if isAllowedQuality(quality) %}
                                     <a href="{{ baseUrlAbsolute }}/streams/flagAsView/movie/{{ link.id }}/{{ (vlcDeeplink ~ link.stream)|base64Encode }}" tabindex="1" class="btn btn-success">
@@ -56,7 +56,7 @@
                                 {% endif %}
                             {% endfor %}
                         {% endif %}
-                        {% if not isIos and not isAndroid and isChrome  %}
+                        {% if not isMobile and isChrome  %}
                             {% for quality,link in links %}
                                 {% if isAllowedQuality(quality) %}
                                     <a href="{{ baseUrlAbsolute }}/streams/flagAsView/movie/{{ link.id }}/{{ (baseUrlAbsolute ~ "/streams/play/movie/" ~ link.id)|base64Encode }}" tabindex="1" class="btn btn-success">
