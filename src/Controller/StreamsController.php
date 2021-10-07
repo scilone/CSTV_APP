@@ -216,7 +216,12 @@ class StreamsController extends SecurityController
         if (mb_stripos($catName, 'adult') || mb_stripos($catName, '18') || mb_stripos($catName, '♀')) {
             $contentAlloweded = false;
 
-            if (md5($this->superglobales->getPost()->get('pass')) === $this->superglobales->getSession()->get('SKey')) {
+            if (md5($this->superglobales->getPost()->get('pass')) === $this->superglobales->getSession()->get('SKey')
+                || ($this->superglobales->getSession()->get('xxx') === $this->superglobales->getSession()->get('SKey')
+                    && $this->superglobales->getSession()->get('xxxLimit') > time())
+            ) {
+                $this->superglobales->getSession()->set('xxx', md5($this->superglobales->getPost()->get('pass')));
+                $this->superglobales->getSession()->set('xxxLimit', strtotime('+1 hour'));
                 $contentAlloweded = true;
             }
         }
@@ -440,8 +445,12 @@ class StreamsController extends SecurityController
         if (mb_stripos($catName, 'adult') || mb_stripos($catName, '18') || mb_stripos($catName, '♀')) {
             $contentAlloweded = false;
 
-            if (md5($this->superglobales->getPost()->get('pass')) === $this->superglobales->getSession()->get('SKey'))
-            {
+            if (md5($this->superglobales->getPost()->get('pass')) === $this->superglobales->getSession()->get('SKey')
+                || ($this->superglobales->getSession()->get('xxx') === $this->superglobales->getSession()->get('SKey')
+                    && $this->superglobales->getSession()->get('xxxLimit') > time())
+            ) {
+                $this->superglobales->getSession()->set('xxx', md5($this->superglobales->getPost()->get('pass')));
+                $this->superglobales->getSession()->set('xxxLimit', strtotime('+1 hour'));
                 $contentAlloweded = true;
             }
         }

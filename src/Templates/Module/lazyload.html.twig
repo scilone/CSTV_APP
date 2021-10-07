@@ -46,6 +46,10 @@
                 "{{ baseUrlAbsolute }}/streams/{{ type }}/{{ currentCat }}/{{ sort }}/{{ search }}?start=" + itemsLoad + '&' + urlQuery,
                 function(data) {
                     $('#flex').append(data);
+                    setTimeout(function(){
+                        setDeviceType();
+                        setFlexItemSize();
+                    }, 250);
                 }
             );
         }

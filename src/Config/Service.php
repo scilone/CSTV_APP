@@ -13,6 +13,7 @@ Class Service
     const CONTROLLER_CACHES   = 'App\Controller\CachesController';
     const CONTROLLER_IMPORT   = 'App\Controller\ImportController';
     const CONTROLLER_COINBASE = 'App\Controller\CoinbaseController';
+    const CONTROLLER_FOOT     = 'App\Controller\FootController';
 
     const APPLICATION_TWIG    = 'App\Application\Twig';
     const APPLICATION_IPTV    = 'App\Application\Iptv';
@@ -33,5 +34,6 @@ Class Service
     const INFRASTRUCTURE_SODIUM        = 'App\Infrastructure\SodiumDummies';
     const INFRASTRUCTURE_MYSQL         = 'App\Infrastructure\SqlConnection';
     const INFRASTRUCTURE_COINBASE      = 'App\Infrastructure\Coinbase';
+    const INFRASTRUCTURE_FOOT          = 'App\Infrastructure\Foot';
     const INFRASTRUCTURE_IMDB          = 'App\Infrastructure\Imdb';
 }

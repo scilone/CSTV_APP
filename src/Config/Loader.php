@@ -55,6 +55,11 @@ class Loader
             Service::INFRASTRUCTURE_COINBASE,
             Service::DOMAIN_REPOSITORY_COINBASE_HISTO
         ],
+        Service::CONTROLLER_FOOT => [
+            Service::APPLICATION_TWIG,
+            Service::INFRASTRUCTURE_SUPERGLOBALES,
+            Service::INFRASTRUCTURE_FOOT
+        ],
 
 
         Service::APPLICATION_TWIG => [
@@ -124,6 +129,9 @@ class Loader
             SecretParam::COINBASE_API_SECRET
         ],
         Service::INFRASTRUCTURE_IMDB => [
+            Service::INFRASTRUCTURE_CURL
+        ],
+        Service::INFRASTRUCTURE_FOOT => [
             Service::INFRASTRUCTURE_CURL
         ],
 

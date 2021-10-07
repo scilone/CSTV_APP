@@ -649,7 +649,7 @@ a.btn-default:focus, a.btn-default:hover {
     border-color: rgba(232,177,44, .8);
 }
 
-.flex-full {
-    width: 100%;
-    margin-left: 0;
-}
+/*.flex-full {*/
+/*    width: 100%;*/
+/*    margin-left: 0;*/
+/*}*/
